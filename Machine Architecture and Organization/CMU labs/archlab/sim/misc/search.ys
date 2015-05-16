@@ -1,0 +1,145 @@
+###################################                                                                                                                    
+#search.ys                                                                                                                      
+###################################
+# Execution begins at address 0
+.pos 0                                                                                                                                                 
+main:  irmovl Stack, %esp                                                                                                                              
+       irmovl Stack, %ebp                                                                                                                              
+       irmovl 0x200, %eax #push tree root value, in this case 0x200                                                                                                            
+       pushl %eax                                                                                                                                      
+       irmovl 80, %eax #push val, in the case it is 80                                                                                                                   
+       pushl %eax                                                                                                                                      
+       call search                                                                                                                                     
+       halt
+	
+	# node* search(node *tree, int val)
+search:
+	pushl %ebp
+	rrmovl %esp,%ebp
+	mrmovl 12(%ebp),%eax     # eax = tree
+	mrmovl 8(%ebp),%ecx      # ecx = val
+	andl %eax,%eax		     # check whether node = 0
+	je End
+	mrmovl (%eax), %edx	     # edx = eax = node
+	subl %ecx, %edx		     # value of node - val
+	je End			         # value of node = val, done
+	jg Greater		         # value of node > val
+	mrmovl 8(%eax), %edx	 # value of node < val, edx = right node
+	pushl %edx		         # push right node
+	pushl %ecx		         # push val
+	call search
+	jmp End
+
+Greater:
+	mrmovl 4(%eax), %edx  	 # edx = left node
+	pushl %edx		         # push left node
+	pushl %ecx		         # push val
+	call search
+	jmp End
+	
+End:
+	rrmovl %ebp,%esp
+	popl %ebp
+	ret
+	
+#End of the search function
+#Start of Data (four level binary search tree with 15 elements)	
+	      .align 4                                                                                                                                             
+.pos 0x200                                                                                                                                                 
+tree :                                                                                                                                                     
+      .long 25         #root node                                                                                                                                    
+      .long 0x300                                                                                                                                          
+      .long 0x30c                                                                                                                                          
+      .long 6                                                                                                                                              
+      .long 0x318                                                                                                                                          
+      .long 0x324                                                                                                                                          
+      .long 18                                                                                                                                             
+      .long 0x330                                                                                                                                          
+      .long 0x33c                                                                                                                                          
+      .long 35                                                                                                                                             
+      .long 0x348                                                                                                                                          
+      .long 0x354                                                                                                                                          
+      .long 80                                                                                                                                             
+      .long 0x360                                                                                                                                          
+      .long 0x36c                                                                                                                                          
+      .long 0 #tree leaves                                                                                                                                 
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0 
+.pos 0x300                                                                                                                                                 
+      .long 12                                                                                                                                             
+      .long 0x20c                                                                                                                                          
+      .long 0x218                                                                                                                                          
+      .long 50                                                                                                                                             
+      .long 0x224                                                                                                                                          
+      .long 0x230                                                                                                                                          
+      .long 3                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 9                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 14                                                                                                                                             
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 22                                                                                                                                             
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 30                                                                                                                                             
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 45                                                                                                                                             
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 60                                                                                                                                             
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 90                                                                                                                                             
+      .long 0                                                                                                                                              
+      .long 0#End of the tree data      
+      .long 0#Start of the runtime stack                                                                                                                                            
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                                                                                                                                              
+      .long 0                  
+Stack:
+
