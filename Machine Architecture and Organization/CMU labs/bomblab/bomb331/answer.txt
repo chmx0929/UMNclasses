@@ -1,0 +1,6 @@
+The moon unit will be divided into two divisions.
+1 2 4 8 16 32
+4 0
+6 6
+5 115
+2 4 6 3 5 1
