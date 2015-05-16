@@ -1,0 +1,114 @@
+#################################
+#Start of the matrix multiply code#
+#################################
+###Will not work for 0 size######
+matrixFun:
+       pushl %ebp  #%eax is the return value
+       rrmovl %esp, %ebp
+       pushl %esi
+       pushl %ebx
+       pushl %edi
+       xorl %esi, %esi #initialize i
+       xorl %ebx, %ebx #initialize j
+       xorl %edi, %edi #initialize k
+       xorl %edx, %edx #initialize sum  
+
+# Fill with your matrix function       
+
+loop1:					
+	xorl %ebx, %ebx     #initialize j
+loop2:					
+	xorl %edi, %edi     #initialize k
+	xorl %edx, %edx     #initialize sum
+loop3:	
+	xorl %eax, %eax     #initialize eax
+	xorl %ecx, %ecx     #initialize ecx
+	pushl %edx	
+	         
+loopa:            	             
+	addl %esi, %eax        # eax = eax + i	    
+	irmovl 1, %edx
+	addl %edx, %ecx	       # ecx + 1
+	mrmovl 8(%ebp), %edx   # edx = size
+	subl %ecx, %edx	       # size - ecx
+	jg loopa
+	addl %edi, %eax        # i*size + k
+	addl %eax, %eax        # 2*(i*size + k)
+	addl %eax, %eax        # 4*(i*size + k)
+	mrmovl 12(%ebp), %ecx  # address of A 
+	addl %ecx, %eax	       # A + 4*(i*size + k)
+	pushl %eax	       	   # store 4*(i*size + k)
+	xorl  %ecx,%ecx
+	xorl  %eax,%eax
+loopb:	                    
+	addl %edi, %eax        # eax = eax + k	    
+	irmovl 1, %edx
+	addl %edx, %ecx	       # ecx + 1
+	mrmovl 8(%ebp), %edx  
+	subl %ecx, %edx	       
+	jg loopb
+	addl %ebx, %eax        # k*size + j
+	addl %eax, %eax        # 2*(k*size + j)
+	addl %eax, %eax        # 4*(k*size + j)
+	mrmovl 16(%ebp), %ecx  # address of B 
+	addl %ecx, %eax	       # B + 4*(k*size + j)
+	rrmovl %eax, %ecx      # ecx = B + 4*(k*size + j)
+	popl %eax	           # eax = A + 4*(i*size + k)
+	mrmovl (%eax), %eax    # get value of A
+	mrmovl (%ecx), %ecx	   # get value of B
+	xorl %eax, %ecx        # ecx = A ^ B
+
+	popl %edx
+	addl %ecx, %edx	    # sum = sum + A ^ B
+	irmovl 1, %ecx		
+	addl %ecx, %edi     # k = k + 1
+	rrmovl %edi, %ecx   
+	mrmovl 8(%ebp), %eax
+	subl %ecx, %eax
+	jg loop3
+	xorl %eax, %eax     #initialize eax to store result
+	xorl %ecx, %ecx     #initialize ecx as a counter
+	pushl %edx
+loopc:
+	addl %esi, %eax        # eax = eax + i
+	irmovl 1, %edx
+	addl %edx, %ecx	       
+	mrmovl 8(%ebp), %edx  
+	subl %ecx, %edx        
+	jg loopc
+	addl %ebx, %eax        # eax = i*size + j
+	addl %eax, %eax        # 2*(i*size + j)
+	addl %eax, %eax        # 4*(i*size + j)
+	mrmovl 20(%ebp), %ecx
+	addl %ecx, %eax	       # C + 4*(i*size + j)
+	popl %edx	
+	rmmovl %edx, (%eax)    # C[i][j] = sum
+
+	pushl %ecx
+	irmovl 1, %ecx
+	addl %ecx, %ebx       
+	popl %ecx
+	rrmovl %ebx, %ecx   
+	mrmovl 8(%ebp), %eax
+	subl %ecx, %eax  
+	jg loop2
+
+	pushl %ecx
+	irmovl 1, %ecx
+	addl %ecx, %esi       
+	popl %ecx   
+	mrmovl 8(%ebp), %eax
+	subl %esi, %eax
+	jg loop1
+	
+Done : 
+		xorl %ecx,%ecx
+		xorl %edx,%edx
+        popl %edi
+        popl %ebx
+        popl %esi
+        rrmovl %ebp, %esp
+        popl %ebp
+        ret 
+#End of matrix multiply code#
+#Start of matrix Data#
