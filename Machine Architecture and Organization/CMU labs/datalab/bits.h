@@ -1,0 +1,27 @@
+
+int bitNor(int, int);
+int test_bitNor(int, int);
+int thirdBits();
+int test_thirdBits();
+int isTmax(int);
+int test_isTmax(int);
+int fitsShort(int);
+int test_fitsShort(int);
+int anyOddBit();
+int test_anyOddBit();
+int negate(int);
+int test_negate(int);
+int byteSwap(int, int, int);
+int test_byteSwap(int, int, int);
+int replaceByte(int, int, int);
+int test_replaceByte(int, int, int);
+int conditional(int, int, int);
+int test_conditional(int, int, int);
+int rotateRight(int, int);
+int test_rotateRight(int, int);
+int sm2tc(int);
+int test_sm2tc(int);
+unsigned float_abs(unsigned);
+unsigned test_float_abs(unsigned);
+unsigned float_twice(unsigned);
+unsigned test_float_twice(unsigned);
