@@ -1,0 +1,396 @@
+<html>
+<head>
+
+<title>CSCI 2041, Advanced Programming Principles</title>
+
+<center>
+<img align=bottom src="http://www.umn.edu/images/syssesqui.jpg"
+alt="[UMN logo]">
+</center>
+
+<center>
+<h1>
+CSCI 2041: Advanced Programming Principles<br>
+Spring 2041, University of Minnesota<br>
+Homework 3
+</h1>
+</center>
+
+<p><hr><p>
+
+<b>Posted:</b> Feb 25, 2015<br>
+<b>Due:</b> March 6, 2015 by 17:00 hours<br>
+
+<p>
+<hr>
+<p>
+<H2>Submission Protocol</h2>
+
+All of your work for this assignment must be submitted in a file
+named <i>hw3.ml</i>. Include your solutions for the third problem in a
+comment in this file. <i>Mark the solutions clearly as solutions to
+  the corresponding problems; this must be done in an OCaml comment
+  line next to the solution.</i>
+This file must be submitted to your private git repository in this course's
+organization, i.e., umn-csci-2041S15/repo-abcde001. It must be accessible
+from the root of this repository via the relative
+  path <i>hw3/hw3.ml</i>. The programming problems are specific about
+  the names of the types, functions and the types of the functions you
+  must define. You <b>must</b> stick to the requirements spelled out
+  in each case; if you don't do this, you will not get credit for what
+  you have done for that part.
+
+<p>
+Before you start working on the homework, make sure to read the
+comments on <a href="index.html#hwprotocol">the protocol for homeworks
+    and the issues we consider when grading</a>. Note in particular
+that you must pay attention to the structure of your programs, you
+must not have excessively long lines and you must use indentation to
+make your program text readable. Also avoid tabs: they show up
+differently under different editors and can make your code look ugly,
+something that <i>does matter</i> when we grade your work.
+
+
+<p><hr><p>
+
+<h2>Problem 1 (5 points)</h2>
+
+Define a function
+<blockquote>
+<pre>
+  divide_list : ('a -> bool) -> 'a list -> 'a list * 'a list
+</pre>
+</blockquote>
+that takes a boolean function over a given type and a list of elements
+of that type and divides the list into two lists, one containing all
+the elements that satisfy the boolean function and the other
+containing those that do not satisfy it. Here are some example
+interactions that characterize the desired behaviour of the function:
+<blockquote>
+<pre>
+# divide_list (fun x -> true) [];;
+- : 'a list * 'a list = ([], [])
+# divide_list (fun x -> if (String.length x < 4) then true else false)
+	       ["this"; "is"; "a"; "list"; "of"; "mixed"; "length"; "strings"];;
+- : string list * string list =
+(["is"; "a"; "of"], ["this"; "list"; "mixed"; "length"; "strings"])
+# divide_list  (fun x -> if (x mod 2 = 0) then true else false) [1;3;6;8;9;10];;
+- : int list * int list = ([6; 8; 10], [1; 3; 9])
+#
+</pre>
+</blockquote>
+The second expression that we have asked OCaml to evaluate above makes
+use of a library function called <tt>length</tt> that works on
+strings. This library function is part of a <tt>String</tt> "module"
+in OCaml and to use it we have to qualify it with the name of the
+module; this is like the <tt>List</tt> module and the use that we made
+in the lecture of the <tt>map</tt> function from that module. We will talk
+explicitly about modules later in the course, for now just understand
+how to use what the library modules provide. Also, you may find it
+useful to know what OCaml provides you as library functions. For
+this, look up Part IV of the
+<a href="http://caml.inria.fr/pub/docs/manual-ocaml-4.02/">OCaml
+  manual</a>.
+
+<p>
+<b>Note:</b> For credit in this problem, you must
+define <tt>divide_list</tt> <b>without</b> the use of any OCaml
+library functions.
+
+<p><hr><p>
+
+<h2>Problem 2 (5 points)</h2>
+
+In class we considered mapping a function over a list. We should be
+able to do this for any recursive data type. In this problem we will
+consider doing it for a binary tree. In particular, let us use the
+representation for binary trees obtained from the following type
+declaration:
+<blockquote>
+<pre>
+type 'a btree =
+    Empty
+  | Node of 'a * 'a btree * 'a btree
+</pre>
+</blockquote>
+Define a function
+<blockquote>
+<pre>
+  treemap : 'a btree -> ('a -> 'b) -> 'b btree
+</pre>
+</blockquote>
+That takes a binary tree and a function that acts on the elements of
+the binary tree as input and transforms the tree into a new tree that
+is obtained by applying the function to each element in the tree.
+<p>
+To help you understand the function you need to define a bit better,
+here are some example applications of it:
+<blockquote>
+<pre>
+# treemap (Node (4, Node (2, Empty, Empty), Node (5, Empty,Empty))) (fun x -> x + 3);;
+- : int btree = Node (7, Node (5, Empty, Empty), Node (8, Empty, Empty))
+# treemap (Node (4, Node (2, Empty, Empty), Node (5, Empty,Empty))) (fun x -> (x mod 2 = 0));;
+- : bool btree =
+Node (true, Node (true, Empty, Empty), Node (false, Empty, Empty))
+#
+</pre>
+</blockquote>
+
+<p><hr><p>
+
+<h2>Problem 3 (4 + 4 points)</h2>
+
+For each of the function definitions below
+<ul>
+<li> explicitly follow the process that was explained in connection
+  with the definition of <tt>append</tt> in class to determine if the
+function definition is type correct, and
+
+<p>
+<li>at the end of it, indicate what type is inferred for the
+  function.
+</ul>
+<i>You must show your work for the first of the items above for
+  credit in this problem.</i> Also, do not forget that you have to
+  complete the type checking process to conclude that the function is
+  in fact type correct; if you leave it half way through, it is not
+  clear that the type you infer will actually work, and so you will
+  lose credit.
+
+<ol>
+<li> The function <tt>accumulate</tt> defined as follows:
+<blockquote>
+<pre>
+  let rec accumulate f lst u =
+      match lst with
+      | [] -> u
+      | (h::t) -> accumulate f t (f h u)
+</pre>
+</blockquote>
+
+<p>
+<li>The function <tt>exists2</tt> defined as follows
+<blockquote>
+<pre>
+  let rec exists2 p l1 l2 =
+     match (l1,l2) with
+     | ([],_) -> true
+     | (_,[]) -> true
+     | ((h1::t1),(h2::t2)) ->
+ 	  (p h1 h2) || (exists2 p t1 t2)
+</pre>
+</blockquote>
+</ol>
+
+<p><hr><p>
+
+<h2>Problem 4 (3 + 3 + 3 points)</h2>
+
+Fill in the blanks below to complete the definitions of the functions
+shown:
+<ol>
+<li> <tt>let append l1 l2 = reduce ___ l1 ___</tt>
+
+<p>
+<li> <tt>let reverse l1 = accumulate ___ l1 ___</tt>
+
+<p>
+<li> <tt>let filter f l1 = reduce ___ l1 ___</tt>
+</ol>
+
+In case you miss the definition of <tt>reduce</tt> in class, here it is
+<blockquote>
+<pre>
+  let rec reduce f lst u =
+     match lst with
+     | [] -> u
+     | (h::t) -> f h (reduce f t u)
+</pre>
+</blockquote>
+
+Also, <tt>filter</tt> takes a boolean valued function and a list and
+it produces a list with only the items in the input list that satisfy
+the input function. Here is a sample interaction that brings its
+expected behaviour out:
+<blockquote>
+<pre>
+# filter (fun x -> (x mod 2 = 0)) [1;2;3;4;5;6];;
+- : int list = [2; 4; 6]
+# filter (fun x -> (x mod 2 = 0)) [];;
+- : int list = []
+# 
+</pre>
+</blockquote>
+We will see a direct definition of <tt>filter</tt> that does not use
+any predefined functions in class.
+
+<p><hr><p>
+
+
+<h2>Problem 5 (5 + 8 points)</h2>
+
+This problem continues one that you saw in the midterm exam concerning
+substituting OCaml expressions for identifiers in other OCaml
+expressions. The critical new part now is that we will also consider
+substitutions in the context of let expressions. Concretely, let us
+suppose that the expressions of interest are represented by
+the <tt>expr</tt> type shown below:
+<blockquote>
+<pre>
+type  expr =
+  Id of string | Int of int
+| Plus of expr * expr | Minus of expr * expr
+| Let of string * expr * expr
+</pre>
+</blockquote>
+The eventual task is the same as in the exam: you have to define a function
+<blockquote>
+<pre>
+   subst : expr -> string -> expr -> expr
+</pre>
+</blockquote>
+that takes an expression, the name of an identifier and an expression
+to replace it with and returns an expression that is obtained by
+replacing all occurrences of the identifier in the first expression by
+the second one. Although this problem seems very much like the one in
+the exam, the presence of let expressions makes it more
+complicated. Let us understand this first and then see how to overcome
+the problems.
+<p>
+There are actually two reasons why the task is more complicated.
+<ul>
+<li>First, if the name of the identifier being substituted for is
+  identical to the identifier bound by the let, then no substitution
+  should be made. For example, the following expression
+<blockquote>
+<pre>
+subst (Let ("x", Id "y", (Plus (Id "x",Id "z")))) "x" (Int 3)
+</pre>
+</blockquote>
+must not evaluate to
+<blockquote>
+<pre>
+ Let ("x", Id "y", Plus (Int 3, Id "z"))
+</pre>
+</blockquote>
+but to
+<blockquote>
+<pre>
+Let ("x", Id "y", Plus (Id "x", Id "z")).
+</pre>
+</blockquote>
+Note, however, that we still have to carry out the substitution in the
+expression that the identifier is getting bound to. For example
+<blockquote>
+<pre>
+subst (Let ("x", Id "x", (Plus (Id "x",Id "z")))) "x" (Int 3)
+</pre>
+</blockquote>
+should evaluate to
+<blockquote>
+<pre>
+ Let ("x", Int 3, Plus (Id "x", Id "z")).
+</pre>
+</blockquote>
+
+<p>
+<li>When substituting into a let expression, we have to be careful
+  that the expression being substituted does not have identifier
+  occurrences that get bound by the let. For example, the expression
+<blockquote>
+<pre>
+ subst (Let ("x", Id "y", Plus (Id "x", Id "z"))) "z" (Plus (Int 3, Id "x"))
+</pre>
+</blockquote>
+must not evaluate to
+<blockquote>
+<pre>
+ Let ("x", Id "y", Plus (Id "x", Plus (Int 3, Id "x")))
+</pre>
+</blockquote>
+Instead, we should first "rename" the identifier bound by the let to get
+an expression something like
+<blockquote>
+<pre>
+ Let ("var1", Id "y", Plus (Id "var1", Id "z"))
+</pre>
+</blockquote>
+and then carry out the substitution to get
+<blockquote>
+<pre>
+ Let ("var1", Id "y", Plus (Id "var1", Plus (Int 3, Id "x")))
+</pre>
+</blockquote>
+A natural question here is why the renaming is okay. The reason is
+simple: the main purpose for the name of the identifier being bound by
+the let is to determine where to use the expression it is being bound
+to in the body of the let and so long as we preserve this
+correspondence, we are not changing the meaning of the expression.
+</ul>
+
+
+Having understood the nuances of substitution, let us now turn to how
+we can realize it correctly. We will do this in two steps.
+<ol>
+<li>First, define the function <tt>freeIn : expr -> string ->
+    bool</tt> that takes an expression and a name and returns true if
+    that name appears unbound in the expression. Here are some interactions
+    that show the expected behaviour of <tt>freeIn</tt>:
+<blockquote>
+<pre>
+# freeIn (Plus (Id "x", Id "y")) "x";;
+- : bool = true
+# freeIn (Plus (Id "x", Id "y")) "z";;
+- : bool = false
+# freeIn (Let ("x", Id "x", Plus (Id "x", Id "y"))) "x";;
+- : bool = true
+# freeIn (Let ("x", Id "z", Plus (Id "x", Id "y"))) "x";;
+- : bool = false
+#
+</pre>
+</blockquote>
+This function will be used in the next part.
+<p>
+<li>Now define the function <tt>subst: expr -> string -> expr -> expr</tt>.
+Use the function <tt>freeIn</tt> to determine if
+  renaming is needed in a let expression. To determine this, you have
+  to check if the name bound by the let appears in the expression
+  being substituted. If you do need to rename, you will need a way
+  to generate a new name. Use the following code
+  for this:
+<blockquote>
+<pre>
+let namecounter = ref 0
+let newname () =
+     ( namecounter := !namecounter + 1; "var" ^ string_of_int !namecounter)
+</pre>
+</blockquote>
+We will talk about the meaning of this code later in the course. For
+ now, just note that every time you need a new name, you just need to
+ use the expression <tt>newname ()</tt>. Here is an interaction that
+ shows how to use it and what happens when you do:
+<blockquote>
+<pre>
+# newname ();;
+- : string = "var1"
+#
+</pre>
+</blockquote>
+There is a possibility of course that the "new name" that is generated
+ in this way also already appears in the expression but, for this
+ homework, it is okay to assume that the name will actually be
+ fresh. If you are really bold and would like also to avoid the
+ potential for such clashes, talk to me, I can help you figure out
+ how not to have to rely on this assumption.
+</ol>
+
+<p><hr><p>
+
+<address>
+Last modified: March 6 2015. Created by gopalan atsign cs
+dot umn dot edu.
+<p><hr><p>
+<div id="disclaimer" style="font-weight: normal; clear: both; margin-top: 5px; font-size: small; font-style: italic;">The views and opinions expressed in this page are strictly those of the page author(s). The contents of this page have not been reviewed or approved by the University of Minnesota.</p></div></body>
+</address>
+
+</html>

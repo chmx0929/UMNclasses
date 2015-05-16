@@ -1,0 +1,385 @@
+<html>
+<head>
+
+<title>CSCI 2041, Advanced Programming Principles</title>
+
+<center>
+<img align=bottom src="http://www.umn.edu/images/syssesqui.jpg"
+alt="[UMN logo]">
+</center>
+
+<center>
+<h1>
+CSCI 2041: Advanced Programming Principles<br>
+Spring 2041, University of Minnesota<br>
+Homework 5
+</h1>
+</center>
+
+<p><hr><p>
+
+<b>Posted:</b> March 23, 2015<br>
+<b>Due:</b> April 3, 2015 by midnight<br>
+
+<p>
+<hr>
+<p>
+<H2>Submission Protocol</h2>
+
+All of your work for this assignment must be submitted in a file
+named hw5.ml. Include your solutions for the last three
+problems in comments in this file. <i>Mark the solutions clearly as
+  solutions to
+  the corresponding problems; this must be done in an OCaml comment
+  line next to the solution.</i> Also note that each problem has
+several parts. Your comment should indicate which part it is that is
+being solved. For example, just before the solution for
+Part 1 of Problem 1, write "Problem 1, Part 1" in a comment.
+<p>
+The hw5.ml file must be submitted to your private git repository in
+this course's
+organization, i.e., umn-csci-2041S15/repo-abcde001. It must be accessible
+from the root of this repository via the relative
+  path <i>hw5/hw5.ml</i>. The programming problems are specific about
+  the names of the types, functions and the types of the functions you
+  must define. You <b>must</b> stick to the requirements spelled out
+  in each case; if you don't do this, you will not get credit for what
+  you have done for that part.
+
+<p>
+Before you start working on the homework, make sure to read the
+comments on <a href="index.html#hwprotocol">the protocol for homeworks
+    and the issues we consider when grading</a>. Also, before
+submitting the final version of your homework, you
+should ensure it is well-formed and type-correct, i.e., contain no
+syntax or type errors. If it is not you will receive no credit. You
+may check this by running the following command in the same directory as your
+homework submission on a <u>cselabs</u> machine:
+<blockquote>
+  <pre>ocamlbuild hw5.byte || echo "\n\n---INCORRECT SUBMISSION---\n\n"</pre>
+</blockquote>
+ If you see:
+<blockquote>
+  <pre>---INCORRECT SUBMISSION---</pre>
+</blockquote>
+it means your homework submission is not well-formed or well-typed and
+should be corrected before submission.
+
+
+<p><hr><p>
+
+<h2>Problem 1 (2 + 2 + 4 + 2 points)</h2>
+
+In this problem, we will assume a language with statements like in
+Java or C but in which we can represent lists and use functions on
+them like in OCaml. In this language, we can write the following
+program fragment to reverse a list
+<blockquote>
+<pre>
+   rev = [];
+   while not (l = []) {
+     rev = (List.hd l) :: rev;
+     l = List.tl l;
+   }
+</pre>
+</blockquote>
+The task in this problem is to using the ideas we discussed in class
+and that you used in Lab 9 to eventually write a let declaration that
+binds the identifier <tt>revprog</tt> to the encoding of this program
+in OCaml. However, you should do it in the following steps:
+<ol>
+<li>Explain (in a comment in the <tt>hw5.ml</tt> file) what the
+  representation of a state would be for this program fragment. Then
+  provide a type declaration that defines the type <tt>state</tt>
+  based on the representation you have chosen. Assume for this part
+  that all our lists are integer lists.
+<p>
+<li>Write the <tt>get</tt> and <tt>put</tt> functions for each of the
+  variables used in this program based on your encoding of the state.
+<p>
+<li>Write a let declaration that binds the identifier <tt>revprog</tt>
+  to the encoding in OCaml of the program fragment shown. You may use
+  the definitions of <tt>seq</tt>, <tt>ifstat</tt>,
+  and <tt>whilestat</tt> provided to you in the
+  file <tt>impprog.ml</tt> that you will find in the <tt>code</tt>
+  subdirectory of the public repository for this course.
+<p>
+<li>Using <tt>revprog</tt>, define a function <tt>revlist : (int list)
+  -> (int list)</tt> that takes an integer list as input and returns
+  its reverse as output. An example interaction using this function
+  would be the following:
+<blockquote>
+<pre>
+# revlist [1;2;3];;
+- : int list = [3; 2; 1]
+#
+</pre>
+</blockquote>
+Your definition of <tt>revlist</tt> <b>must</b> use <tt>revprog</tt>
+ to get credit, simply defining a function for reversing integer lists
+ will not be sufficient. 
+</ol>
+
+<p><hr><p>
+
+<h2>Problem 2 (5 + (1 + 1 + 3) + 2 points)</h2>
+
+<ol>
+<li>Recall the <tt>do-while</tt> construct from C. The syntax for it
+  is the following
+<blockquote>
+<pre>
+   do &lt;statement&gt; while &lt;condition&gt;;
+</pre>
+</blockquote>
+where <tt>&lt;statement&gt</tt> can be any statement in C
+and <tt>&lt;condition&gt;</tt> is any boolean-valued (actually,
+integer-valued, but for simplicity we will use booleans here)
+expression in C. The meaning of this construct is that we should
+execute the statement, then repeatedly execute the loop so long as the
+condition remains true.
+<p>
+Assuming the model for encoding statements in C that we considered in
+class and in Lab 9, provide a definition for the
+identifier <tt>dostat</tt> so that it encodes this <tt>do-while</tt>
+construct.
+<p>
+<li>Using the encoding of <tt>do-while</tt> described above, provide
+  an encoding of the following program fragment from C that calculates
+  the sum of the numbers up to a given positive number <tt>n</tt>:
+<blockquote>
+<pre>
+   i = 0;
+   sum = 0;
+   do { i = i + 1; sum = sum + i; }
+   while (i < n);
+</pre>
+</blockquote>
+You should do this through the following steps:
+<p>
+<ol type = a>
+<li>Explain in a comment how you will represent state as relevant to
+  this program fragment and then define a type <tt>state</tt>
+  corresponding to this representation.
+<p>
+<li>Based on your representation of state write the <tt>get</tt>
+  and <tt>put</tt> functions for the variables used in this program
+  fragment.
+<p>
+<li>Using a let declaration, bind the identifier <tt>sumup</tt> to an
+  expression in OCaml that represents the shown program fragment.
+</ol>
+<p>
+<li>Using the definition of <tt>sumup</tt> from
+  the previous part, define the function <tt>sumToN : int -> int</tt>
+  that takes a positive number and sums the natural numbers up to that
+  number. An example interaction using this function would be the
+  following: 
+<blockquote>
+<pre>
+# sumToN 7;;
+- : int = 28
+# 
+</pre>
+</blockquote>
+You <b>must</b> use <tt>sumup</tt> from the previous part in defining
+this function. Simply writing a function to sum up the natural numbers
+up to a given positive number will not be sufficient. 
+</ol>
+
+<p><hr><p>
+
+<h2>Problem 3 (3 + 5 + 2 points)</h2>
+
+First, let us recall the definition of the Fibonnaci numbers: the
+first and second Fibonnaci numbers are both 1; the n<sup>th</sup>
+Fibonnaci number for n greater than 2 is the sum of the
+(n-1)<sup>th</sup> and (n-2)<sup>nd</sup> Fibonnaci numbers.
+<p>
+Now consider the following function in OCaml that calculates the
+n<sup>th</sup> Fibonnaci number
+<blockquote>
+<pre>
+    let fib n =
+      let rec fib' n m f s =
+        if (n = m) then f
+        else fib' n (m+1) s (f+s)
+      in fib' n 1 1 1
+</pre>
+</blockquote>
+Your task in this problem is to prove that this function is correct,
+i.e., you need to show
+<blockquote>
+  For <tt>n</tt> greater than or equal to 1, <tt>(fib n)</tt> evaluates
+  to the n<sup>th</sup> Fibonnaci number.
+</blockquote>
+The steps through which you should do this are the following:
+<ol>
+<li>Identify a property of <tt>fib'</tt> that will be useful in
+  showing this; recall that this kind of property of auxiliary
+  functions is what we have been calling a "lemma" about them.
+<p>
+<li>Using induction, prove that <tt>fib'</tt> has this property.
+<p>
+<li>Using the property you have shown <tt>fib'</tt> to possess, prove
+  that <tt>fib</tt> has the property that we want to show for it.
+</ol>
+Be very careful in picking the property you want to show
+for <tt>fib'</tt>. As we saw in the case of <tt>tr_fact</tt> in class,
+you need to pick a property that satisfies two different criteria: you
+must be able to show that <tt>fib'</tt> possesses it <i>and</i> it
+must be useful in showing that <tt>fib</tt> is correct.
+<p>
+Whatever you write for this part should be included in comments in the
+the <tt>hw5.ml</tt> file.
+<p><hr><p>
+
+<h2>Problem 4 ((2 + 4 + 2) + (2 + 4 + 2) points)</h2>
+
+<ol>
+<li> Consider the tail-recursive version of the <tt>reverse</tt>
+  function we defined in class a while ago.
+<blockquote>
+<pre>
+let reverse lst =
+   let rec rev lst1 lst2 =
+      match lst1 with
+      |	[] -> lst2
+      |	(h::t) -> rev t (h::lst2)
+   in rev lst []
+</pre>
+</blockquote>
+Let us represent the reverse of a list <i>l</i> in mathematical
+notation by writing <i>l^R</i>. Further, let us use
+the infix operator <i>+</i> to represent the appending of lists at a
+mathematical level, i.e. <i>l<sub>1</sub> + l<sub>2</sub></i>
+represents the result of appending the two lists <i>l<sub>1</sub></i>
+and <i>l<sub>2</sub></i>. Using this notation, the correctness
+of <i>reverse</i> can be expressed as the following property:
+<blockquote>
+  For all lists <i>l</i>, <i>(reverse l)</i> evaluates to <i>l^R</i>.
+</blockquote>
+The task in this part is to prove that <i>reverse</i> satisfies this
+property. You are to do this in the following steps:
+<p>
+<ol type = a>
+<li>Articulate a property of <i>rev</i> that you can both prove and
+  that would be helpful in proving that <i>reverse</i> satisfies the
+  property required of it.
+<p>
+<li>Prove the property of <i>rev</i> that you have stated using
+  induction on the structure of lists.
+<p>
+<li>Use the property that you have proved for <i>rev</i> to prove
+  that <i>reverse</i> satisfies the property required of it.
+</ol>
+<p>
+In writing your arguments, you can use simple facts about lists at the
+mathematical level, such as the following
+<blockquote>
+ for all lists <i>l<sub>1</sub></i> and <i>l<sub>2</sub></i> and
+ all  <i>x</i> that can be elements of such lists,
+ (x::l<sub>1</sub>)^R + l<sub>2</sub></i> = <i>l<sub>1</sub>^R + (x::
+ l<sub>2</sub>)</i>.  
+</blockquote>
+Of course, such properties must be obvious once you write them down,
+otherwise you must prove them. 
+<p>
+<li>Consider now the following function that computes the length of a
+  list:
+<blockquote>
+<pre>
+let rec length lst =
+   match lst with
+   | [] -> 0
+   | (h::t) -> (length t) + 1
+</pre>
+</blockquote>
+The task in this part is to show that <i>reverse</i> preserves the
+lengths of lists, i.e. that
+<blockquote>
+   <i>for all lists <i>l</i>, (length (reverse l))</i> evaluates to
+   the same value as <i>(length l)</i> 
+</blockquote>
+Follow the same sequence of steps as in the first part, i.e.
+<p>
+<ol type = a>
+<li>Articulate a property based on <i>length</i> for <i>rev</i>.
+<p>
+<li>Prove the property about <i>rev</i> and <i>length</i> using
+  induction on lists.
+<p>
+<li>Use the property you have proved for <i>rev</i> to conclude
+  that <i>reverse</i> preserves the lengths of lists.
+</ol>
+</ol>
+
+Include solutions to this problem in comment form in the homework
+file.
+
+<p><hr><p>
+
+<h2>Problem 5 (8 points)</h2>
+
+Consider the following code that defines a representation for binary
+trees and then defines functions for inserting items into the tree and
+for looking for items in the tree.
+<blockquote>
+<pre>
+type 'a btree =
+  | Empty
+  | Node of 'a * 'a btree * 'a btree
+
+let rec insert t i =
+   match t with
+   | Empty -> Node (i,Empty,Empty)
+   | Node (i',l,r) ->
+        if (i < i') then Node (i',insert l i,r)
+        else Node (i',l,insert r i)
+
+let rec find t i =
+   match t with
+   | Empty -> false
+   | Node (i',l,r) ->
+       if (i = i') then true
+       else if (i < i') then find l i
+            else find r i
+</pre>
+</blockquote>
+To keep things simple, we have followed the somewhat naive (and "broken")
+idea of using = and &lt; directly on the items stored in the tree,
+even though we now know how to do this better.
+<p>
+There are a few
+different properties that we would want to prove of
+our <i>insert</i> function in order to be able to claim it is
+correct. We will look at some of these in class. For this problem,
+your task is to prove the following:
+<blockquote>
+  For any given tree <i>t</i> and for any given data item <i>x</i>
+  suppose that <i>(insert t x)</i> evaluates to the
+  tree <i>t'</i>. Then <i>(find t' x')</i> evaluates to true for
+  any data item <i>x'</i> of the type stored in <i>t</i> only if
+  either <i>x'</i> is <i>x</i> or <i>(find t x')</i> evaluates
+  to true.
+</blockquote>
+Use induction on the structure of the tree <i>t</i> to prove this.
+<p>
+A curious thing about the property you are going to prove: it is true
+regardless of whether or not our trees respect the invariant of
+binary search trees, even though the <i>insert</i> and <i>find</i>
+functions are structured based on this invariant.
+<p>
+Include solutions to this problem in comment form in the homework
+file.
+<p><hr><p>
+
+
+<address>
+Last modified: March 24, 2015. Created by gopalan atsign cs
+dot umn dot edu.
+<p><hr><p>
+<div id="disclaimer" style="font-weight: normal; clear: both; margin-top: 5px; font-size: small; font-style: italic;">The views and opinions expressed in this page are strictly those of the page author(s). The contents of this page have not been reviewed or approved by the University of Minnesota.</p></div></body>
+</address>
+
+</html>

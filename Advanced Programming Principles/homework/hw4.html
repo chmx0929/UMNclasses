@@ -1,0 +1,536 @@
+<html>
+<head>
+
+<title>CSCI 2041, Advanced Programming Principles</title>
+
+<center>
+<img align=bottom src="http://www.umn.edu/images/syssesqui.jpg"
+alt="[UMN logo]">
+</center>
+
+<center>
+<h1>
+CSCI 2041: Advanced Programming Principles<br>
+Spring 2041, University of Minnesota<br>
+Homework 4
+</h1>
+</center>
+
+<p><hr><p>
+
+<b>Posted:</b> March 6, 2015<br>
+<b>Due:</b> March 23, 2015 by midnight<br>
+
+<p>
+<hr>
+<p>
+<H2>Submission Protocol</h2>
+
+All of your work for this assignment must be submitted in a file
+named <i>hw4.ml</i>. <i>Mark the solutions clearly as solutions to
+  the corresponding problems; this must be done in an OCaml comment
+  line next to the solution.</i>
+This file must be submitted to your private git repository in this course's
+organization, i.e., umn-csci-2041S15/repo-abcde001. It must be accessible
+from the root of this repository via the relative
+  path <i>hw4/hw4.ml</i>. The programming problems are specific about
+  the names of the types, functions and the types of the functions you
+  must define. You <b>must</b> stick to the requirements spelled out
+  in each case; if you don't do this, you will not get credit for what
+  you have done for that part. In the first problem, you are required
+to complete the missing parts in a definition. You <b>must</b> define
+the function needed by doing this; ignoring the partial definition
+already provided and writing your own code for the function will not
+get you credit.
+
+<p>
+Before you start working on the homework, make sure to read the
+comments on <a href="index.html#hwprotocol">the protocol for homeworks
+    and the issues we consider when grading</a>. Note in particular
+that you must pay attention to the structure of your programs, you
+must not have excessively long lines and you must use indentation to
+make your program text readable. Also avoid tabs: they show up
+differently under different editors and can make your code look ugly,
+something that <i>does matter</i> when we grade your work.
+
+<p>
+Finally, before submitting the final version of your homework, you
+should ensure it is well-formed and type-correct, i.e., contain no
+syntax or type errors. If it is not you will receive no credit. You
+may check this by running the following command in the same directory as your
+homework submission on a <u>cselabs</u> machine:
+<blockquote>
+  <pre>ocamlbuild hw4.byte || echo "\n\n---INCORRECT SUBMISSION---\n\n"</pre>
+</blockquote>
+ If you see:
+<blockquote>
+  <pre>---INCORRECT SUBMISSION---</pre>
+</blockquote>
+it means your homework submission is not well-formed or well-type and
+should be corrected before submission.
+
+
+<p><hr><p>
+
+<h2>Problem 1 (3 points for each function, 1 extra point for addOnePair)</h2>
+
+This problem is modelled on an application for the map-reduce paradigm
+that is
+described <a href="http://stackoverflow.com/questions/12375761/good-map-reduce-examples-for-explanation">here</a>. The
+task is to calculate all the friends in common between all pairs of
+(Facebook) friends. 
+<p>
+The 
+general structure of the problem is the following. For each person we
+have given to us a list of friends. For example,
+if <tt>a</tt>, <tt>b</tt>, <tt>c</tt>, <tt>d</tt> and <tt>e</tt> 
+are the people in question, the corresponding list of friends may be
+the following:
+<blockquote>
+<pre>
+a -> b c d
+b -> a c d e
+c -> a b d e
+d -> a b c e
+e -> b c d
+</pre>
+</blockquote>
+What we want to compute eventually is an list of common friends for
+each pair of friends. For example, from the information given above, we
+want to compute the following information:
+<blockquote>
+<pre>
+(a b) -> (c d)
+(a c) -> (b d)
+(a d) -> (b c)
+(b c) -> (a d e)
+(b d) -> (a c e)
+(b e) -> (c d)
+(c d) -> (a b e)
+(c e) -> (b d)
+(d e) -> (b c)
+</pre>
+</blockquote>
+This problem structures this computation as a map-reduce one. Your
+task is to understand this structure and to fill in the missing pieces
+in some function definitions to complete the solution.
+<p>
+At the very beginning, we have to decide how to represent "persons."
+We will do this using their names, written as strings. Thus, the
+person written as <tt>a</tt> above will be represented by the
+string <tt>"a"</tt>. We will then represent the input in the problem
+by a list of pairs, the first item of each pair being a person and the
+second a list of his/her friends. Thus, the input in the example above
+will be encoded as follows:
+<blockquote>
+<pre>
+   [ ("a", ["b"; "c"; "d"]);
+     ("b", ["a"; "c"; "d"; "e"]);
+     ("c", ["a"; "b"; "d"; "e"]);
+     ("d", ["a"; "b"; "c"; "e"]);
+     ("e", ["b"; "c"; "d"]) ]
+</pre>
+</blockquote>
+In the rest of the description below, we will assume that the
+identifier <tt>friendsList</tt> has been bound to this list through a
+declaration of the form
+<blockquote>
+<pre>
+let friendsList =
+   [ ("a", ["b"; "c"; "d"]);
+     ("b", ["a"; "c"; "d"; "e"]);
+     ("c", ["a"; "b"; "d"; "e"]);
+     ("d", ["a"; "b"; "c"; "e"]);
+     ("e", ["b"; "c"; "d"]) ]
+</pre>
+</blockquote>
+<p>
+Not surprisingly, the solution to a problem of the kind described will
+involve a <i>mapping</i> and a <i>reducing</i> phase. 
+<ol>
+<li>In the mapping phase, we will transform the
+  input into a list of lists, where each list associates the friends
+  of a person with pairs consisting of that person and each of his/her
+  friends. For example, given <tt>friendsList</tt> as input, we want
+  to transform this into the list
+<blockquote>
+<pre>
+[[(("a", "b"), ["b"; "c"; "d"]); (("a", "c"), ["b"; "c"; "d"]);
+  (("a", "d"), ["b"; "c"; "d"])];
+ [(("a", "b"), ["a"; "c"; "d"; "e"]); (("b", "c"), ["a"; "c"; "d"; "e"]);
+  (("b", "d"), ["a"; "c"; "d"; "e"]); (("b", "e"), ["a"; "c"; "d"; "e"])];
+ [(("a", "c"), ["a"; "b"; "d"; "e"]); (("b", "c"), ["a"; "b"; "d"; "e"]);
+  (("c", "d"), ["a"; "b"; "d"; "e"]); (("c", "e"), ["a"; "b"; "d"; "e"])];
+ [(("a", "d"), ["a"; "b"; "c"; "e"]); (("b", "d"), ["a"; "b"; "c"; "e"]);
+  (("c", "d"), ["a"; "b"; "c"; "e"]); (("d", "e"), ["a"; "b"; "c"; "e"])];
+ [(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "c"; "d"]);
+  (("d", "e"), ["b"; "c"; "d"])]]
+</pre>
+</blockquote>
+One thing to note here: when we pair two people together, we will
+represent them by using their names in alphabetical order in the
+pair. For example, the pair representing <tt>"a"</tt> and <tt>"b"</tt>
+will be written as <tt>("a","b")</tt>, whereas the pair
+representing <tt>"c"</tt> and <tt>"b"</tt> will be written
+as <tt>("b","c")</tt>.
+<p>
+We will implement the mapping transformation in two steps:
+<ol type = a>
+<li>Given a person and a list of his/her friends, define a
+  function <tt>makePairLists</tt> that will associate the list with
+  each pair of the person and a friend. Here is an example interaction
+  that shows the behaviour we expect of the function:
+<blockquote>
+<pre>
+# makePairLists "b" ["a"; "c"; "d"; "e"];;
+- : ((string * string) * string list) list =
+[(("a", "b"), ["a"; "c"; "d"; "e"]); (("b", "c"), ["a"; "c"; "d"; "e"]);
+ (("b", "d"), ["a"; "c"; "d"; "e"]); (("b", "e"), ["a"; "c"; "d"; "e"])]
+#
+</pre>
+</blockquote>
+<p>
+We can define <tt>makePairLists</tt> in many ways but in this problem
+we want you to define it via a mapping operation. In particular, fill
+in the blank in the partial definition below to complete it:
+<blockquote>
+<pre>
+ let makePairLists p fl = List.map ___ fl
+</pre>
+</blockquote>
+Compare the behaviour of your function with that shown above. 
+<p>
+<li> Now define the function <tt>makeAllPairLists</tt> that will take
+  the input to the problem and will transform it into the form we want
+  as output of the mapping phase. An interaction that shows the
+  behaviour of this function is the following:
+<blockquote>
+<pre>
+ makeAllPairLists friendsList;;
+- : ((string * string) * string list) list list =
+[[(("a", "b"), ["b"; "c"; "d"]); (("a", "c"), ["b"; "c"; "d"]);
+  (("a", "d"), ["b"; "c"; "d"])];
+ [(("a", "b"), ["a"; "c"; "d"; "e"]); (("b", "c"), ["a"; "c"; "d"; "e"]);
+  (("b", "d"), ["a"; "c"; "d"; "e"]); (("b", "e"), ["a"; "c"; "d"; "e"])];
+ [(("a", "c"), ["a"; "b"; "d"; "e"]); (("b", "c"), ["a"; "b"; "d"; "e"]);
+  (("c", "d"), ["a"; "b"; "d"; "e"]); (("c", "e"), ["a"; "b"; "d"; "e"])];
+ [(("a", "d"), ["a"; "b"; "c"; "e"]); (("b", "d"), ["a"; "b"; "c"; "e"]);
+  (("c", "d"), ["a"; "b"; "c"; "e"]); (("d", "e"), ["a"; "b"; "c"; "e"])];
+ [(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "c"; "d"]);
+  (("d", "e"), ["b"; "c"; "d"])]]
+</pre>
+</blockquote>
+<p>
+We can again define this function in many ways, but what we want to do
+  in this problem is realize it explicitly as a mapping operation. In
+  particular, fill in the blanks below to complete its definition:
+<blockquote>
+<pre>
+ let makeAllPairLists l =  List.map ___ l
+</pre>
+</blockquote>
+Hint: think of using the function <tt>makePairLists</tt> defined in
+  the first subpart above in constructing the mapping function.
+</ol>
+<p>
+<li>The second phase will "reduce" the list constructed in the first
+  phase to produce the output desired in this problem. The key out
+  here would be to define the aggregation function. This function
+  would implement the following idea. One of its inputs will be a list
+  that associates the friends of a person with each pair of that
+  person and his/her friends such as, for example,
+<blockquote>
+<pre>
+[(("a", "c"), ["a"; "b"; "d"; "e"]); (("b", "c"), ["a"; "b"; "d"; "e"]);
+  (("c", "d"), ["a"; "b"; "d"; "e"]); (("c", "e"), ["a"; "b"; "d"; "e"])]
+</pre>
+</blockquote>
+Another of its inputs will be a partially constructed output, obtained
+by aggregating the later (or earlier, depending on the kind of folding
+being done) lists of this kind. This could,
+for example, be the following:
+<blockquote>
+<pre>
+[(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "c"; "d"]);
+ (("d", "e"), ["b"; "c"]); (("a", "d"), ["a"; "b"; "c"; "e"]);
+ (("b", "d"), ["a"; "b"; "c"; "e"]); (("c", "d"), ["a"; "b"; "c"; "e"])]
+</pre>
+</blockquote>
+These two lists represent the possible shared friends from two
+different perspectives. For example, the first input indicates that
+the shared friends for <tt>"c"</tt> and <tt>"e"</tt> are limited
+to <tt>["a"; "b"; "d"; "e"]</tt> because these are the only
+friends <tt>"c"</tt> has. Relatedly the second input indicates that
+the shared friends for <tt>"c"</tt> and <tt>"e"</tt> are limited
+to <tt>["b"; "c"; "d"]</tt> because these are the only
+friends <tt>"e"</tt> has. We want to combine these perspectives to
+conclude that the common friends for <tt>"c"</tt> and <tt>"e"</tt>
+are <tt>["b"; "d"]</tt>, the intersection of their two friends
+lists. More completely, given the above two inputs, we want our
+aggregation function to compute the new partial output
+<blockquote>
+<pre>
+[(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "d"]);
+ (("d", "e"), ["b"; "c"]); (("a", "d"), ["a"; "b"; "c"; "e"]);
+ (("b", "d"), ["a"; "b"; "c"; "e"]); (("c", "d"), ["a"; "b"; "e"]);
+ (("a", "c"), ["a"; "b"; "d"; "e"]); (("b", "c"), ["a"; "b"; "d"; "e"])]
+</pre>
+</blockquote>
+<p>
+We will construct the aggregation function in the following steps.
+<ol type = a>
+<li>One operation that we will need is that of constructing the
+  intersection of two sets of friends. As in Lab 7, we represent sets
+  as lists in with a particular item appears at most once. As we did
+  for union in Lab 7, we will define intersection using an aggregation
+  function. In particular, complete its definition by filling the
+  blanks in the following partial definition:
+<blockquote>
+<pre>
+ let intersect l1 l2 = List.fold_right ___ l1 ___
+</pre>
+</blockquote>
+Test that it works correctly by using examples such as that of
+combining the potential list of common friends of <tt>"c"</tt>
+and <tt>"e"</tt> into one list of actual common friends as discussed
+above. 
+<p>
+<li>Now define the function <tt>addOnePair</tt> that takes one pair of
+  friends and a list of potential common friends and assimilates this
+  information into a previously computed, partial list of common
+  friends. Some example interactions that show the expected behaviour
+  of this function:
+<blockquote>
+<pre>
+addOnePair
+  (("a", "c"), ["a"; "b"; "d"; "e"])
+  [(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "c"; "d"]);
+   (("d", "e"), ["b"; "c"]); (("a", "d"), ["a"; "b"; "c"; "e"]);
+   (("b", "d"), ["a"; "b"; "c"; "e"]); (("c", "d"), ["a"; "b"; "c"; "e"])];;
+    - : ((string * string) * string list) list =
+[(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "c"; "d"]);
+ (("d", "e"), ["b"; "c"]); (("a", "d"), ["a"; "b"; "c"; "e"]);
+ (("b", "d"), ["a"; "b"; "c"; "e"]); (("c", "d"), ["a"; "b"; "c"; "e"]);
+ (("a", "c"), ["a"; "b"; "d"; "e"])]
+# addOnePair
+  (("c", "e"), ["a"; "b"; "d"; "e"])
+  [(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "c"; "d"]);
+   (("d", "e"), ["b"; "c"]); (("a", "d"), ["a"; "b"; "c"; "e"]);
+   (("b", "d"), ["a"; "b"; "c"; "e"]); (("c", "d"), ["a"; "b"; "c"; "e"])];;
+        - : ((string * string) * string list) list =
+[(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "d"]);
+ (("d", "e"), ["b"; "c"]); (("a", "d"), ["a"; "b"; "c"; "e"]);
+ (("b", "d"), ["a"; "b"; "c"; "e"]); (("c", "d"), ["a"; "b"; "c"; "e"])]
+#
+</pre>
+</blockquote>
+Note that in the first case the pair gets added as is to the partial
+list of common friends because there isn't another previous
+perspective of common friends for <tt>"a"</tt> and <tt>"c"</tt>
+whereas in the second case, two different perspectives of the common
+friends of <tt>"c"</tt> and <tt>"e"</tt> have to be combined. Note
+also that I had to define this function without using the aggregation
+or mapping functions, I could not see a way to do it otherwise.
+<p>
+<li>Finally, define the aggregation function
+  called <tt>addAllPairs</tt> that will take a list that associates
+  the friends of a person with each pair of that person and his/her
+  friends and a partially aggregated output to construct a more
+  accurate aggregated output. An example interaction to indicate the
+  expected behaviour for <tt>addAllPairs</tt>:
+<blockquote>
+<pre>
+# addAllPairs 
+  [(("a", "c"), ["a"; "b"; "d"; "e"]); (("b", "c"), ["a"; "b"; "d"; "e"]);
+   (("c", "d"), ["a"; "b"; "d"; "e"]); (("c", "e"), ["a"; "b"; "d"; "e"])]
+  [(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "c"; "d"]);
+   (("d", "e"), ["b"; "c"]); (("a", "d"), ["a"; "b"; "c"; "e"]);
+   (("b", "d"), ["a"; "b"; "c"; "e"]); (("c", "d"), ["a"; "b"; "c"; "e"])];;
+    - : ((string * string) * string list) list =
+[(("b", "e"), ["b"; "c"; "d"]); (("c", "e"), ["b"; "d"]);
+ (("d", "e"), ["b"; "c"]); (("a", "d"), ["a"; "b"; "c"; "e"]);
+ (("b", "d"), ["a"; "b"; "c"; "e"]); (("c", "d"), ["a"; "b"; "e"]);
+ (("a", "c"), ["a"; "b"; "d"; "e"]); (("b", "c"), ["a"; "b"; "d"; "e"])]
+# 
+</pre>
+</blockquote>
+This function can be defined by aggregation using the previously
+defined <tt>addOnePair</tt> function. In particular, fill in the
+blanks below to complete its definition:
+<blockquote>
+<pre>
+let addAllPairs ppls l = List.fold_left ___ l ppls
+</pre>
+</blockquote>
+</ol>
+<p>
+<li>The only remaining thing is to put the mapping and the
+  aggregation operations together in a map-reduce combination to get a
+  solution to the problem. Use the following code to do this
+<blockquote>
+<pre>
+  let commonFriends l = List.fold_right addAllPairs (makeAllPairLists l) []
+</pre>
+</blockquote>
+If you have defined the functions used in
+implementing <tt>commonFriends</tt> correctly, you should get
+behaviour of the following sort:
+<blockquote>
+<pre>
+# commonFriends friendsList;;
+- : ((string * string) * string list) list =
+[(("b", "e"), ["c"; "d"]); (("c", "e"), ["b"; "d"]);
+ (("d", "e"), ["b"; "c"]); (("a", "d"), ["b"; "c"]);
+ (("b", "d"), ["a"; "c"; "e"]); (("c", "d"), ["a"; "b"; "e"]);
+ (("a", "c"), ["b"; "d"]); (("b", "c"), ["a"; "d"; "e"]);
+ (("a", "b"), ["c"; "d"])]
+# 
+</pre>
+</blockquote>
+</ol>
+
+
+<p><hr><p>
+
+<h2>Problem 2 (3 points for each of the part (1), (3), (4) and (5), 2
+  points each for the other parts)</h2>
+
+An ordered list is a list in which an element that appears later in
+the list is never smaller than an element that appears earlier in the
+list, where the notion of "smaller than" is given by a specific chosen
+relation. For example, the list 
+<blockquote>
+<pre>
+   [1; 5; 7; 12; 13]
+</pre>
+</blockquote>  
+is an ordered list relative to the usual <tt><</tt> relation on
+numbers, the list 
+<blockquote>
+<pre>
+   [17; 14; 9; 6; 2]
+</pre>
+</blockquote>  
+is an ordered list relative to the <tt>></tt> relation on numbers but
+not relative to the <tt><</tt> order and the list
+<blockquote>
+<pre>
+   [17; 14; 9; 13; 2]
+</pre>
+</blockquote>
+is an ordered list relative to neither the usual <tt><</tt> nor the
+usual <tt>></tt> relation on numbers. 
+
+<ol>
+<li> Clearly, whether or not a list is ordered is dependent also on
+  the ordering relation in use. Define a type
+  constructor <tt>olist</tt> that is like the <tt>list</tt> type
+  constructor except that values of this type carry enough information
+  to determine whether or not they are ordered lists relative to the
+  intended ordering relation. 
+<p>
+<li>Define a function
+<blockquote>
+<pre>
+   initOList : ('a -> 'a -> bool) -> 'a olist
+</pre>
+</blockquote>
+that takes an ordering relation over a given type and returns an empty
+  <tt>olist</tt> of that type. 
+<p>
+<li>Using let declarations, bind <tt>list1</tt> and <tt>list2</tt> to
+  two different values of <tt>int olist</tt> type that use different
+  ordering relations and that satisfy the invariant based on that
+  ordering relation. Then bind <tt>list3</tt> to a value of <tt>int
+  olist</tt> that does not satisfy the necessary invariant.
+<p>
+<li> Define a function 
+<blockquote>
+<pre>
+   isOrderedList : ('a olist) -> bool
+</pre>
+</blockquote> 
+that takes an ordered list and determines whether or not it satisfied
+the required ordering invariant based on the intended ordering
+relation. Test this function using the
+identifiers <tt>list1</tt>, <tt>list2</tt> and <tt>list3</tt>.
+<p>
+<li> Define a function 
+<blockquote>
+<pre>
+   insertOList : 'a -> ('a olist) -> ('a olist)
+</pre>
+</blockquote>
+that takes an element and an ordered list and returns an ordered list
+that has all the original elements plus the new one and that continues
+to satisfy the invariant based on the relevant ordering property.
+<p> 
+<li> Define a function
+<blockquote>
+<pre>
+  olistToList : 'a olist -> 'a list
+</pre>
+</blockquote>
+that takes an ordered list and converts it into an ordinary list with
+the same elements and in the same order as in the given olist.
+</ol>
+
+<p><hr><p>
+
+<h2>Problem 3 (4 + 6 points)</h2>
+
+Transform the functions shown below into a tail-recursive form by
+using continuations in the manner (to be) discussed in class. Use the
+names indicated for the transformed versions of the functions; we need
+you to do this for our automated testing tools to work.
+<ol>
+<li>The append function
+<blockquote>
+<pre>
+   let rec append l1 l2 =
+     match l1 with 
+     | [] -> l2
+     | (h::t) -> h::append t l2
+</pre>
+</blockquote>
+The function you should define in this case is the following:
+<blockquote>
+<pre> 
+   cont_append : 'a list -> 'a list -> ('a list -> 'b) -> 'b
+</pre>
+</blockquote>
+<p>
+<li> Suppose that we have defined the <tt>btree</tt> type constructor
+  as follows:
+<blockquote>
+<pre>
+   type 'a btree = Empty | Node of 'a * 'a btree * 'a btree
+</pre>
+</blockquote>
+The function to transform is then the following:
+<blockquote>
+<pre>
+   let rec sumTree t =
+     match t with 
+     | Empty -> 0
+     | Node (i,l,r) -> i + sumTree l + sumTree r
+</pre>
+</blockquote>
+The function you should define is the following:
+<blockquote>
+<pre>
+  cont_sumTree : int btree -> (int -> 'a) -> 'a
+</pre>
+</blockquote>
+</ol>
+
+<p><hr><p>
+
+<address>
+Last modified: March 7, 2015. Created by gopalan atsign cs
+dot umn dot edu.
+<p><hr><p>
+<div id="disclaimer" style="font-weight: normal; clear: both; margin-top: 5px; font-size: small; font-style: italic;">The views and opinions expressed in this page are strictly those of the page author(s). The contents of this page have not been reviewed or approved by the University of Minnesota.</p></div></body>
+</address>
+
+</html>

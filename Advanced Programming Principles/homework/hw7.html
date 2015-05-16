@@ -1,0 +1,343 @@
+<html>
+<head>
+
+<title>CSCI 2041, Advanced Programming Principles</title>
+
+<center>
+<img align=bottom src="http://www.umn.edu/images/syssesqui.jpg"
+alt="[UMN logo]">
+</center>
+
+<center>
+<h1>
+CSCI 2041: Advanced Programming Principles<br>
+Spring 2041, University of Minnesota<br>
+Homework 7
+</h1>
+</center>
+
+<p><hr><p>
+
+<b>Posted:</b> April 20, 2015<br>
+<b>Due:</b> April 29, 2015 by midnight<br>
+
+<p><hr><p>
+<b>Note</b>: Before you get started, you should copy the code in the
+file <a href="hw7.ml">hw7.ml</a>. You will need to build your
+solutions around this and you will also need to look at it together
+with the descriptions below to understand them completely.
+<p><hr><p>
+
+<H2>Submission Protocol</h2>
+
+Your work for this assignment must be submitted in a file
+named <i>hw7.ml</i>. There are two problems in this homework. <i>Mark
+  the solution to each problem clearly, through an OCaml comment
+  line next to the solution you are providing.</i> The first problem
+requires you to define a function called <tt>color_graph</tt> and the
+second requires a function called <tt>color_graph_cps</tt>. Moreover,
+each function has to realize a particular style of solution to the
+same overall problem. <i>Make sure to use the given names for these
+  functions and also to adhere closely to how we want you to solve the
+  problems; this is crucial for credit.</i> You have also been
+provided with code for displaying your solutions. Make sure to use
+this code: not only will it simplify your task, it will also be
+important to our being able to run your functions and to grade them. 
+<p>
+This file that you create with your code must be submitted to your
+private git repository in this course's organization, i.e.,
+umn-csci-2041S15/repo-abcde001. It must be accessible from the root of
+this repository via the relative   path <i>hw7/hw7.ml</i>. 
+<p>
+Before you start working on the homework, make sure to read the
+comments on <a href="index.html#hwprotocol">the protocol for homeworks
+    and the issues we consider when grading</a>. Note in particular
+that you must pay attention to the structure of your programs, you
+must not have excessively long lines and you must use indentation to
+make your program text readable. Also avoid tabs: they show up
+differently under different editors and can make your code look ugly,
+something that <i>does matter</i> when we grade your work.
+
+<p>
+Finally, before submitting the final version of your homework, you
+should ensure it is well-formed and type-correct, i.e., contain no
+syntax or type errors. If it is not you will receive no credit. You
+may check this by running the following command in the same directory as your
+homework submission on a <u>cselabs</u> machine:
+<blockquote>
+  <pre>ocamlbuild hw7.byte || echo "\n\n---INCORRECT SUBMISSION---\n\n"</pre>
+</blockquote>
+ If you see:
+<blockquote>
+  <pre>---INCORRECT SUBMISSION---</pre>
+</blockquote>
+it means your homework submission is not well-formed or well-type and
+should be corrected before submission.
+
+<p><hr><p>
+
+<h2>The Graph Colouring Problem</h2>
+
+The problem of graph colouring is the following: we are given a
+collection of nodes with (undirected) edges between them and a palate
+of colours and we are asked to find a way to assign colours to the
+nodes in such a way that two nodes that are adjacent do not get the
+same colour.
+<p>
+This is a problem that turns out to be of significant practical 
+importance. One place where it is useful is in colouring maps: here
+the nodes are countries or states or counties, depending on what kind
+of map you are looking at, and two nodes are adjacent if they
+represent distinct regions that share a border. Another place where
+graph colouring shows up is in assigning space (such as registers) to
+the variables in a program. Think here of the space or register as a
+colour (the palate is especially limited if we are thinking of the
+registers in a real machine as the colours), the variables are nodes
+and two variables share an edge if their values are "live" at the same
+time somewhere in the program; clearly, they can be assigned the same
+space/register only if they <i>do not</i> share an edge. Looked at
+differently, if we are able to colour the variables satisfactorily,
+then the colouring gives us a way to allocate space for them.
+<p>
+Graph colouring is a problem for which we do not know a good algorithm
+currently and for which it is conjectured we will never know one; to
+put this more precisely, it is what is known as an <i>NP-complete</i>
+problem. Problems of this kind that are practically important are
+often solved using search. Typically, the search uses heuristics that
+help in cutting down the work in practice. In this homework, we will
+take a simplistic approach, using search to solve graph colouring but
+without building in any heuristics. If the problem excites you, I can
+suggest some heuristics for you to try later. 
+<p>
+The two problems below for which you have to write code differ in the
+way they want you to implement the search. Before getting to them, we
+describe some things that are common to their setup. We will represent
+graphs using two 
+components: a list of nodes and, for each node a list of nodes
+adjacent to it. As an example, consider the complete graph with 4
+nodes named 1, 2, 3 and 4; for simplicity we will use numbers for
+nodes. (Recall that a complete graph is one in which every node is
+connected to every other node.) This graph would be represented by the
+nodes list <tt>[1;2;3;4]</tt> and the adjacency list
+<blockquote>
+<pre>
+   [(1,[2;3;4]); (2,[1;3;4]); (3,[1;2;4]); (4,[1;2;3])]
+</pre>
+</blockquote>
+The functions you will define will also be parameterized by a
+collection of colours. These will be provided in the form of a list of
+strings such as the following:
+<blockquote>
+<pre>
+  ["R"; "B"; "G"; "Y"]
+</pre>
+</blockquote>
+
+<p><hr><p>
+
+<h2>Problem 1</h2>
+
+The goal in this problem is to define a function
+called <tt>color_graph</tt> that takes a graph and a set of colours
+presented in the fashion described above and determines a colouring
+for the graph. There are, however, two special requirements:
+<ul>
+<li>Like in the problems in Lab 13, the function will display
+  the colouring to user and interact with her/him to decide if the
+  colouring is satisfactory. Thus, the type of the function should be
+  the following:
+<blockquote>
+<pre>
+color_graph : int list -> (int * int list) list -> string list -> unit
+</pre>
+</blockquote>
+Here the kind of interaction expected is the following:
+<blockquote>
+<pre>
+# color_graph [1;2;3;4] [(1,[2;3;4]); (2,[1;3;4]); (3,[1;2;4]); (4,[1;2;3])] 
+              ["R"; "B"; "G"; "Y"];;
+  
+Coloring for the graph: [(4,Y), (3,G), (2,B), (1,R)]
+More solutions (y/n)? y
+
+Coloring for the graph: [(4,G), (3,Y), (2,B), (1,R)]
+More solutions (y/n)? n
+- : unit = ()
+# color_graph [1;2;3;4;5] 
+              [(1,[2;3;4;5]); (2,[1;3;4;5]); (3,[1;2;4;5]); 
+               (4,[1;2;3;5]); (5,[1;2;3;4])] 
+              ["R"; "B"; "G"; "Y"];;
+      
+No (more) colourings possible
+- : unit = ()
+# 
+</pre>
+</blockquote>
+I am giving you the functions necessary for arranging the
+interactions; see below. Your task will be mainly to organize the
+search in the problem.
+<p>
+<li><b>You must organize the search in this problem using
+  exceptions</b>; the next problem will get you to do the same thing using
+  success and failure continuations and the whole point of this
+  homework is to make sure you have understood these two different
+  techniques. 
+</ul>
+
+How should we go about solving the graph colouring problem? Here is
+the basic structure: 
+<ol>
+<li>We pick the first node that has still not been coloured and try to
+  colour it; if we are successful, i.e. if it can be given a colour
+  that is different from the colours given to its neighbours, we add
+  the colouring and move on to the next node.
+<p>
+<li>The colour that we have picked for the node in the previous step
+  may turn out to be "bad" in that the rest of the graph cannot be
+  coloured with that choice. In this case, we would backtrack to
+  considering another colour for the node. In the model to be used in
+  this problem, the failure <b>must be</b> treated by raising an exception,
+  specifically, the exception <tt>Search_Failure</tt>, and
+  backtracking <b>must be</b> treated by catching and handling the
+  exception. 
+<p>
+<li>On the other hand, we may succeed in colouring all the nodes
+  satisfactorily. In this case, we should interact with the user using
+  the <tt>ask_user</tt> function provided to you and whose behaviour
+  is described below. 
+</ol>
+
+To let you focus on the core task, that of organizing the search using
+exceptions, I have provided you the code for displaying a
+colouring once one has been found and for checking if the user is
+satisfied. Read this code and try to understand it so that you can
+write such functions yourself in the future. However, here is an
+example that shows you how you would use the code when you are
+defining <tt>color_graph</tt>:  
+<blockquote>
+<pre>
+# ask_user show_coloring [(1,"R"); (2,"B"); (3,"G"); (4,"Y")];;
+
+Coloring for the graph: [(1,R), (2,B), (3,G), (4,Y)]
+More solutions (y/n)? 
+</pre>
+</blockquote>
+Note that colourings are represented by lists of node and colour
+pairs. After displaying the colouring, the function awaits an input
+from the user. If the input is "y", it raises the
+exception <tt>Search_Failure</tt>, otherwise it finishes normally. 
+<p>
+I have included the header for <tt>color_graph</tt> and comments with
+it to help you get started on this problem. Your task is mainly to
+understand the structure and to fill in the code for this function. 
+
+<p><hr><p>
+<h2>Problem 2</h2>
+
+In this problem, we are going to solve the same graph colouring task
+but this time using success and failure continuations to handle the
+situations were search ends in success and where it ends in
+failure. The task is to complete the definition of the function
+<blockquote>
+<pre>
+   color_graph_cps : int list -> (int * int list) list -> string list -> unit
+</pre>
+</blockquote>
+to realize the following computation structure:
+<ol>
+<li>We pick the first node that has still not been coloured and try to
+  colour it; if we are successful, i.e. if it can be given a colour
+  that is different from the colours given to its neighbours, we add
+  the colouring to the ones we have already determined, and move on to
+  colouring the next node. 
+<p>
+<li>The colour that we have picked for the node in the previous step
+  may turn out to be "bad" in that the rest of the graph cannot be
+  coloured with that choice. To prepare for this contingency, we
+  should pass on a suitable failure continuation to the function that
+  we are calling. Similarly, it should get a suitable success
+  continuation that would enable it to do the right thing in case of
+  success. 
+<p>
+<li>We may also fail to find a suitable colour for the node in the
+  first step. In this model, we deal with this situation by calling the
+  failure continuation. 
+<p>
+<li>Finally, we may have succeeded in colouring all the nodes in the
+  graph. Now we need to interact with the user. To do this, we use the
+  function <tt>ask_user_cps</tt> as described below. Of course, we
+  have to pass it the right success and failure continuations to
+  prepare for the situations where the user is happy with the
+  colouring or rejects it. 
+</ol>
+
+The only remaining thing to be explained is how to use the code I have
+provided you for displaying a solution and getting a response from the
+user. If <tt>coloring</tt> is bound to a good colouring, then you
+would invoke 
+<blockquote>
+<pre>
+(ask_user_cps show_coloring colouring succ fail)
+</pre>
+</blockquote>
+where <tt>succ</tt> and <tt>fail</tt> are suitable
+continuations. Some examples that illustrate the use of this function
+are the following:
+<blockquote>
+<pre>
+#  ask_user_cps show_coloring [(1,"R"); (2,"B"); (3,"G"); (4,"Y")] 
+                         (fun () -> ())
+                         (fun () -> Printf.printf "\nNo (more) colorings\n");;
+    
+Coloring for the graph: [(1,R), (2,B), (3,G), (4,Y)]
+More solutions (y/n)? n
+- : unit = ()
+# ask_user_cps show_coloring [(1,"R"); (2,"B"); (3,"G"); (4,"Y")] 
+                         (fun () -> ())
+                         (fun () -> Printf.printf "\nNo (more) colorings\n");;
+    
+Coloring for the graph: [(1,R), (2,B), (3,G), (4,Y)]
+More solutions (y/n)? y
+
+No (more) colorings
+- : unit = ()
+# 
+</pre>
+</blockquote>
+Check out how the two continuations impact on behaviour after the
+user's response. 
+<p>
+For completeness, here is an interaction I got when I ran my code:
+<blockquote>
+<pre>
+# color_graph_cps [1;2;3;4] [(1,[2;3;4]); (2,[1;3;4]); (3,[1;2;4]); (4,[1;2;3])] 
+                  ["R"; "B"; "G"; "Y"];;
+  
+Coloring for the graph: [(4,Y), (3,G), (2,B), (1,R)]
+More solutions (y/n)? y
+
+Coloring for the graph: [(4,G), (3,Y), (2,B), (1,R)]
+More solutions (y/n)? n
+- : unit = ()
+# color_graph [1;2;3;4;5] 
+            [(1,[2;3;4;5]); (2,[1;3;4;5]); (3,[1;2;4;5]); 
+             (4,[1;2;3;5]); (5,[1;2;3;4])] 
+            ["R"; "B"; "G"; "Y"];;
+
+No (more) colourings possible
+- : unit = ()
+#
+</pre>
+</blockquote>
+
+
+<p><hr><p>
+
+<address>
+Last modified: April 20, 2015. Created by gopalan atsign cs
+dot umn dot edu.
+<p><hr><p>
+<div id="disclaimer" style="font-weight: normal; clear: both; margin-top: 5px; font-size: small; font-style: italic;">The views and opinions expressed in this page are strictly those of the page author(s). The contents of this page have not been reviewed or approved by the University of Minnesota.</p></div></body>
+</address>
+
+</html>

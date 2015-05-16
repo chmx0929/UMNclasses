@@ -1,0 +1,390 @@
+<html>
+<head>
+
+<title>CSCI 2041, Advanced Programming Principles</title>
+
+<center>
+<img align=bottom src="http://www.umn.edu/images/syssesqui.jpg"
+alt="[UMN logo]">
+</center>
+
+<center>
+<h1>
+CSCI 2041: Advanced Programming Principles<br>
+Spring 2041, University of Minnesota<br>
+Homework 6
+</h1>
+</center>
+
+<p><hr><p>
+
+<b>Posted:</b> April 12, 2015<br>
+<b>Due:</b> April 20, 2015 by midnight<br>
+
+<p>
+<hr>
+<p>
+<H2>Submission Protocol</h2>
+
+This homework does not involve any programming work. However, you
+should still turn in solutions electronically, in a file named
+hw6.txt. <i>Make sure to indicate which problem each part of the file
+  you turn corresponds to.</i> Also note that each problem has
+several parts and your annotations should indicate the part of the
+problem being solved. For example, just before the solution to Part
+1(a) of Problem 1, write "Problem 1, Part 1(a)."
+<p>
+The hw6.txt file must be submitted to your private git repository in
+this course's
+organization, i.e., umn-csci-2041S15/repo-abcde001. It must be accessible
+from the root of this repository via the relative
+  path <i>hw6/hw6.txt</i>.
+
+<p>
+Although this homework requires no programming, you may still find it
+interesting to play around with the code underlying it. This code is
+provided <a href="hw6code.ml">here</a>.
+<p><hr><p>
+
+<h2>Problem 1 ((2 + 2) + (2 + 2 + 2) + (2 + 2 + 2 + 2 + 1)
+  points)</h2>
+
+<b>Note:</b> Part 4 has been made optional.
+
+<p>
+We mentioned in class that if we were really interested in dealing
+with arbitrarily large numbers, then we should not be using the
+representation of numbers built into OCaml but, rather, we should roll
+our own. We had some discussion about what might be a
+reasonable representation and also about whether or not we could think
+of ordinary operations like addition and multiplication being
+independent of the size of the input. This problem explores some
+of these issues.
+
+<ol>
+<li> We have seen a representation of natural numbers already, based
+  on the following type declaration
+<blockquote>
+<pre>
+   type nat = Zero | Succ of nat
+</pre>
+</blockquote>
+This representation is what you might call a "unary"
+representation. We can think of "converting" a number in the builtin
+representation for integers into one in the unary representation using
+the following function:
+<blockquote>
+<pre>
+  let rec to_unary n =
+     match n with
+     | 0 -> Zero
+     | n -> Succ (to_unary (n-1))
+</pre>
+</blockquote>
+<ol type = a>
+<li>Write a recurrence equation for the size of the output
+  of the function in terms of the input; use the
+  expression <i>S(n)</i> to represent the size of the output for the
+  input <i>n</i>. In writing this equation,
+  assume that a representation of <tt>Zero</tt> requires constant space and
+  a representation of <tt>(Succ n)</tt> adds constant space to what is
+  required to represent <tt>n</tt>.
+<p>
+<li> Solve the recurrence equation to express the size of the output
+  of <tt>to_unary</tt> as as function of the number being represented.
+</ol>
+<p>
+<li>Another way to represent natural numbers may be to use a binary
+  system. The following type provides us a means to realize such a
+  representation:
+<blockquote>
+<pre>
+  type bin_nat =  BO | BT of bin_nat | BS of bin_nat
+</pre>
+</blockquote>
+To understand this representation, think
+of <tt>BO</tt> as the representation of <tt>0</tt>, of <tt>(BT b)</tt>
+as the representation of the number that is two times
+whatever <tt>b</tt> represents and <tt>(BS b)</tt> as the representation
+of 1 plus two times whatever <tt>b</tt> represents. If you think about
+this a little, what this gives us is a binary representation of a number,
+written with the outermost constructor representing the rightmost bit,
+ending with 0 as the most significant bit. For example, the number 11
+in the decimal system would be
+written as <tt>1011</tt> in binary, which, adding a <tt>0</tt> as a most
+significant bit, is the same as <tt>01011</tt>. This binary number
+will then be represented as <tt>(BS (BS (BT (BS BO))))</tt>.
+<p>
+As in the
+case of the unary representation, we could think of a conversion of a
+number in the builtin representation of integers in OCaml to one using
+this representation based on the following function:
+<blockquote>
+<pre>
+let rec to_binary n =
+  match n with
+  | 0 -> BO
+  | n -> if ((n mod 2) = 0) then BT (to_binary (n/2))
+         else BS (to_binary (n/2))
+</pre>
+</blockquote>
+<ol type = a>
+<li>As for the function for converting to unary, write a recurrence
+  equation for the size of the output of the function in terms of the
+  input, using <i>S'(n)</i> to represent the size for
+  input <i>n</i>. Use similar assumptions for quantifying the size of
+  constructors as you did in the first part.
+<p>
+<li> Solve the recurrence equation to express the size of the output
+  of <tt>to_binary</tt> as as function of the number being
+  represented.
+<p>
+<li>Express the size of the unary representation as a function of the
+  binary representation. Hint: You should be able to conclude from
+  this that the unary representation is not a reasonable one to use
+  from the perspective of space usage.
+</ol>
+<p>
+<li>We can implement the <tt>plus</tt> function on numbers represented
+  in binary as follows:
+<blockquote>
+<pre>
+type carry = Zero | One
+
+let plus b1 b2 =
+  let rec percolate_carry =
+     function
+     | (b,Zero) -> b
+     | (BO,One) -> BS BO
+     | (BS b,One) -> BT (percolate_carry (b,One))
+     | (BT b,One) -> BS b
+  in
+  let rec plus_with_carry =
+     function
+     | ((BO,b,c) | (b,BO,c)) -> percolate_carry (b,c)
+     | (BS b1,BS b2,Zero) -> BT (plus_with_carry (b1,b2,One))
+     | (BS b1,BS b2,One) -> BS (plus_with_carry (b1,b2,One))
+     | ((BS b1,BT b2, Zero) | (BT b1, BS b2, Zero)) ->
+          BS (plus_with_carry (b1,b2,Zero))
+     | ((BS b1,BT b2,One) | (BT b1, BS b2, One)) ->
+          BT (plus_with_carry (b1,b2,One))
+     | (BT b1, BT b2, Zero) -> BT (plus_with_carry (b1,b2,Zero))
+     | (BT b1, BT b2, One) -> BS (plus_with_carry (b1,b2,Zero))
+  in plus_with_carry (b1,b2,Zero)
+</pre>
+</blockquote>
+In this part, we want to estimate the cost of addition using the
+binary representation as a function of the sizes of the two inputs. In
+estimating costs here and elsewhere in the homework, remember that we
+always assume the worst case. Also, use a simple estimate of size:
+each <tt>BO</tt>, <tt>BS</tt> and <tt>BT</tt> adds one to the size. (A
+more complicated estimate would only multiply this by a constant.)
+<ol type = a>
+<p>
+<li>The function <tt>percolate_carry</tt> takes a pair of the
+  form <tt>(b,c)</tt> as input. Provide a recurrence equation for the
+  time its evaluation takes as a function of the size of <tt>b</tt>,
+  the first component of this pair. Write <i>T(n)</i> to denote the
+  time taken for input <tt>(b,c)</tt> where <i>n</i> represents the
+  size of <tt>b</tt>.
+<p>
+<li>Solve the recurrence equation to express the time taken
+  by <tt>percolate_carry</tt> as a function of the size of the first
+  component of its input.
+<p>
+<li>The function <tt>plus_with_carry</tt> takes a triple of the
+  form <tt>(b1,b2,c)</tt> as its input. Provide a recurrence equation
+  for the time its evaluation takes as a function of the sizes
+  of <tt>b1</tt> and <tt>b2</tt>, the first and second components of
+  the triple. Write <i>T'(n<sub>1</sub>,n<sub>2</sub>)</i> to denote
+  the time taken for input <tt>(b1,b2,c)</tt>,
+  where <i>n<sub>1</sub></i> represents the size of <tt>b1</tt>
+  and <i>n<sub>2</sub></i> represents the size of <tt>b2</tt>. Note
+  that you will need to use the cost of <tt>percolate_carry</tt> (and,
+  hence, the analysis in the previous parts) in writing this expression.
+<p>
+<li>Solve the recurrence equation to express the time taken
+  by <tt>plus_with_carry</tt> as a function of the sizes
+  of <tt>b1</tt> and <tt>b2</tt> in its input <tt>(b1,b2,c)</tt>
+<p>
+<li>Conclude with an estimate of the time taken by <tt>plus</tt> as a
+  function of the sizes of its two inputs.
+</ol>
+<p>
+<li>We can similarly implement multiplication on numbers represented
+  in binary as follows:
+<blockquote>
+<pre>
+let rec mult b1 b2 =
+  match b1 with
+  | BO -> BO
+  | BS b1' -> plus b2 (BT (mult b1' b2))
+  | BT b1' -> BT (mult b1' b2)
+</pre>
+</blockquote>
+<ol type = a>
+<li>Provide a recurrence equation for the time that <tt>mult</tt>
+  takes, expressed as a function of the sizes of its two inputs. Use
+  the expression <i>T(n<sub>1</sub>, n<sub>2</sub>)</i> to represent
+  the time taken, where <i>n<sub>1</sub></i> is the size of the first
+  input and <i>n<sub>2</sub></i> is the size of the second input.
+<p>
+<li>Solve the recurrence equation to express the time taken
+  by <tt>mult</tt> as a function of the sizes of its inputs.
+</ol>
+</ol>
+Can you also similarly estimate the size of the output
+of <tt>plus</tt> and <tt>mult</tt> as a function of the sizes of their
+inputs? Also, if you are sufficiently intrigued by the binary
+representation discussed in this problem, you  might try to write a
+function for calculating exponentiation. If you do this, try both
+possibilities we would have discussed in class, the naive one and the
+one that divides the exponent by two at least every other iteration,
+and see what you can say about the difference in times taken by the
+two.
+
+<p><hr><p>
+
+<h2>Problem 2 (4 + 4 + 2 + 3 + 5 points)</h2>
+
+There are practically relevant contexts such as ones dealing with
+encryption where we want to carry out the following computation: given three
+numbers <i>a</i>, <i>b</i> and <i>p</i>, we want to
+calculate <i>a<sup>b</sup> mod p</i>. We could try to do this in a
+naive way, by first calculating <i>a<sup>b</sup></i> and then taking
+the modulus of the result with respect to <i>p</i>. Unfortunately
+this approach does not work very well if <i>a</i> and <i>b</i> are big
+numbers: in trying to calculate <i>a<sup>b</sup></i>, we quickly end up
+  with numbers that are so large that they will not fit in the space
+  allocated to the representation of integers within OCaml, and we
+then start
+  getting wierd results because of overflow issues. In this problem,
+  we will consider an alternative method that keeps numbers small and
+  that also builds in some of the insights we had seen in dramatically
+  reducing the number of recursive calls to yield an efficient way to
+  compute this expression.
+<ol>
+<li>Prove the following equality about numbers: <i>((a * b) mod p) =
+    ((a mod p) * (b mod p)) mod p</i>.
+<br>Hint: Think of writing <i>a</i> and <i>b</i> in terms of <i>p</i>
+  and then see what simplifications you can carry out.
+<p>
+<li>Consider the following function definition in OCaml
+<blockquote>
+<pre>
+let rec exp_mod a b p =
+   match b with
+   | 0 -> 1 mod p
+   | _ ->
+      if (b mod 2 = 0)
+      then let n = (exp_mod a (b/2) p) in
+              (n * n) mod p
+      else ((a mod p) * (exp_mod a (b-1) p)) mod p
+</pre>
+</blockquote>
+Using strong induction on natural numbers and the fact you have shown
+in the first part of this problem, prove the following fact about this
+function:
+<blockquote>
+   For all natural numbers a, b, and p, (exp_mod a b p) evaluates to
+   a<sup>b</sup> mod p.
+</blockquote>
+Assume that the arithmetic operations of multiplication, division and
+modulus all follow the ideal behaviour, i.e. there will be no overflow
+or underflow issues.<br>
+Hint: Try induction on b.
+<p>
+<li> Put a bound on the sizes of numbers that we will have to deal
+  with in the computation carried out by <tt>exp_mod</tt>; this should
+  explain why it is (more) reasonable to assume that we will not have
+  overflow errors in this approach to computing the result we
+  want. <br>
+Hint: Express the largest numbers we will see as a number that not much
+  bigger than a, b and p.
+
+<p>
+<li> Provide a recurrence relation that expresses an upper bound on
+  the time taken by <i>exp_mod</i> as a function of its second
+  argument. In other words, writing <i>T(b)</i> for the time taken,
+  your recurrence relation should be of the form
+<blockquote>
+     <i>T(b)</i> &le; ...
+</blockquote>
+where the ... part may use <i>T(b')</i> for some <i>b'</i> that is
+related to <i>b</i>. Justify any relation that you write down; this
+and the fact that the relation that you define can be used to solve
+the next part will carry almost the entire weight.
+<p>
+<li>Using the recurrence relation, show that the time taken
+  by <i>(exp_mod a b p)</i> is <i>O(log<sub>2</sub>(b))</i>; if you have
+  forgotten what the latter means, what you have to show is that there
+  is some constant <i>c</i> such that for values of <i>b</i> larger
+  than some <i>b<sub>0</sub></i> it is the case that <i>(exp_mod a b p)
+  &le; c * log<sub>2</sub>(b)</i>.
+</ol>
+
+<p><hr><p>
+
+<h2>Problem 3 (4 + 4 + 5 points)</h2>
+
+The following code defines an OCaml function <tt>mergesort</tt> that
+sorts a list of objects on which the <tt><</tt> relation is defined:
+<blockquote>
+<pre>
+let rec partition l =
+  match l with
+    | [] -> ([],[])
+    | [_] -> (l,[])
+    | (h1::h2::l') ->
+        let (t1,t2) = partition l' in (h1::t1,h2::t2)
+
+let rec merge l1 l2 =
+  match (l1,l2) with
+  | (([],l) | (l,[])) -> l
+  | (h1::t1,h2::t2) ->
+        if (h1 < h2) then h1 :: merge t1 l2
+        else h2 :: merge l1 t2
+
+let rec mergesort l =
+  match l with
+  | ([] | [_]) -> l
+  | _ -> let (l1,l2) = partition l
+         in let l1' = mergesort l1
+         in let l2' = mergesort l2
+         in merge l1' l2'
+</pre>
+</blockquote>
+For simplicity, assume that the length of the list input
+to <tt>mergesort</tt> is always a power of 2. The task in this problem
+is to eventually show that the time taken
+by <tt>mergesort</tt> is &Omega;(n * k),
+where <i>n</i> is the length of the input list and <i>n =
+  2<sup>k</sup></i>, i.e. <i>k = log<sub>2</sub>(n)</i>.
+<ol>
+<li>Provide a recurrence relation for <i>T(n)</i>, the running time
+  for <tt>partition</tt> expressed as a function of the length of the
+  input list, and use this to argue that its running time
+  is <i>O(n)</i>. 
+<p>
+<li>Provide a recurrence relation for <i>T'(n1,n2)</i>, the running
+  time for <tt>merge</tt> expressed as a function of the
+  length of its two input lists, and use this to argue that this
+  time is <i>O(n1+n2)</i>.
+  lists.
+<p>
+<li>Provide a recurrence relation for <i>T''(n)</i>, the length of
+  the running time for <tt>mergesort</tt> expressed as a function of the
+  length of its input list, and use this to argue that this
+  time is <i>O(n * log(n))</i>.
+</ol>
+<p><hr><p>
+
+
+<address>
+Last modified: April 16, 2015. Created by gopalan atsign cs
+dot umn dot edu.
+<p><hr><p>
+<div id="disclaimer" style="font-weight: normal; clear: both; margin-top: 5px; font-size: small; font-style: italic;">The views and opinions expressed in this page are strictly those of the page author(s). The contents of this page have not been reviewed or approved by the University of Minnesota.</p></div></body>
+</address>
+
+</html>

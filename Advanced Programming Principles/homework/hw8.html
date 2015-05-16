@@ -1,0 +1,472 @@
+<html>
+<head>
+
+<title>CSCI 2041, Advanced Programming Principles</title>
+
+<center>
+<img align=bottom src="http://www.umn.edu/images/syssesqui.jpg"
+alt="[UMN logo]">
+</center>
+
+<center>
+<h1>
+CSCI 2041: Advanced Programming Principles<br>
+Spring 2041, University of Minnesota<br>
+Homework 8
+</h1>
+</center>
+
+<p><hr><p>
+
+<b>Posted:</b> April 30, 2015<br>
+<b>Due:</b> May 8, 2015 by midnight<br>
+
+<p><hr><p>
+<b>Note</b>: Before you get started, you should copy the code in the
+file <a href="rbtree-sig.ml">rbtree-sig.ml</a>
+and <a href="rbtree-mod.ml">rbtree-mod.ml</a>. You will need to use
+this code in Problem 4.
+<p><hr><p>
+
+<H2>Submission Protocol</h2>
+
+You should submit two files containing the code you have written for
+this homework: the file <tt>hw8.ml</tt> containing the code for Problems 1
+through 3 and the file <tt>rbtree.ml</tt> containing the code for
+Problem 4. <i>Mark the solution to each problem and each part both
+  files clearly, through an OCaml comment
+  line next to the solution you are providing.</i> Make sure also to
+stick to the names provided for the different things we want you to
+define, this is critical for our understanding and testing your code.
+<p>
+The files that you are to submit must be uploaded to your private git
+repository in the github structure for the course, i.e.,
+umn-csci-2041S15/repo-abcde001. They must be accessible from the root of
+this repository via the relative path <i>hw8/hw8.ml</i> and <i>hw8/rbtree.ml</i>.
+<p>
+Before you start working on the homework, make sure to read the
+comments on <a href="index.html#hwprotocol">the protocol for homeworks
+    and the issues we consider when grading</a>. Note in particular
+that you must pay attention to the structure of your programs, you
+must not have excessively long lines and you must use indentation to
+make your program text readable. Also avoid tabs: they show up
+differently under different editors and can make your code look ugly,
+something that <i>does matter</i> when we grade your work.
+
+<p>
+Finally, before submitting the final version of your homework, you
+should ensure it is well-formed and type-correct, i.e., contain no
+syntax or type errors. If it is not you will receive no credit. You
+may check this by running the following commands in the same directory as your
+homework submission on a <u>cselabs</u> machine:
+<blockquote>
+  <pre>
+   ocamlbuild hw8.byte || echo "\n\n---INCORRECT SUBMISSION---\n\n"
+   ocamlbuild rbtree.byte || echo "\n\n---INCORRECT SUBMISSION---\n\n"
+</pre>
+</blockquote>
+ If you see:
+<blockquote>
+  <pre>---INCORRECT SUBMISSION---</pre>
+</blockquote>
+for either of these commands, it means that the corresponding homework
+submission is not well-formed or well-typed. You should correct this
+problem before submission.
+
+<p><hr><p>
+
+<h2>Problem 1 (3 + 3 points)</h2>
+
+Consider the following function definitions
+<blockquote>
+<pre>
+let rec map f l =
+   match l with
+   | [] -> []
+   | (h::t) -> (f h) :: map f t
+
+let sqr n = n * n
+
+let rec take l n =
+  match (l,n) with
+  | ((_,0) | ([],_)) -> []
+  | (h::t,n) -> h :: (take t (n-1))
+</pre>
+</blockquote>
+<ol>
+<li>Show the step-by-step evaluation of the expression
+<blockquote>
+<pre>
+   take (map sqr [1;2;3]) 2
+</pre>
+</blockquote>
+under <i>call-by-name</i> evaluation. You <i>must</i> show each
+step in the sequence so as to make clear how exactly computation
+proceeds. Note also that when a list is shown at the interactive
+level, each element of the list is evaluated.
+<p>
+<li>Repeat the above but this time using <i>call-by-value</i>
+  evaluation.
+</ol>
+The answers to each part should be included in comments in the
+file <i>hw8.ml</i> that you submit.
+
+<p><hr><p>
+
+<h2>Problem 2 (4 + (3 + 3) + 4 points)</h2>
+
+We will discuss in class the idea of representing an infinite object
+in a finite fashion in an eager language like OCaml; the technique for
+achieving this relies crucially on delaying evaluation by using what
+we will refer to as a "dummy" function. A generally useful example of
+an infinite object is a never-ending list, also called
+a <i>stream</i>. We can define a representation for such objects by
+means of the following type declaration and associated functions:
+<blockquote>
+<pre>
+type 'a stream = Stream of (unit -> 'a * 'a stream)
+
+let mkStream f = Stream f
+let nextStream (Stream f) = f ()
+</pre>
+</blockquote>
+As should be clear from looking at these definitions, a stream is
+essentially an encapsulation of a dummy function that generates the
+items in the stream, one item at a time. The
+function <tt>mkStream</tt> creates this encapsulation from a
+function of the required kind and the function <tt>nextStream</tt>
+probes the stream, each time giving you a pair consisting of the next
+item in it and an encapsulation of the rest of the stream.
+<p>
+Using these declarations, you can create the stream representing the infinite
+sequence of natural numbers as follows:
+<blockquote>
+<pre>
+let rec fromNStream n = mkStream (fun () -> (n, fromNStream (n+1)))
+
+let natStream = (fromNStream 1)
+</pre>
+</blockquote>
+We assume here that the natural numbers start from 1. We can
+probe the members of this stream successively as shown below:
+<blockquote>
+<pre>
+# let (x,rst) = nextStream natStream;;
+val x : int = 1
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 2
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 3
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 4
+val rst : int stream = Stream &lt;fun&gt;
+#
+</pre>
+</blockquote>
+This problem requires you to work with the idea of streams so as to gain
+some familiarity with using them.
+<ol>
+<li>Define the function
+<blockquote>
+<pre>
+val mapStream : ('a -> 'b) -> 'a stream -> 'b stream = &lt;fun&gt;
+</pre>
+</blockquote>
+that takes a function and a stream of suitable types and produces a
+new stream that corresponds to mapping the function over the items in
+the input stream. You should be able to produce the following kind of
+interaction using this function:
+<blockquote>
+<pre>
+# let (x,rst) = nextStream (mapStream (fun x -> x+3) natStream);;
+val x : int = 4
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 5
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 6
+val rst : int stream = Stream &lt;fun&gt;
+#
+</pre>
+</blockquote>
+<p>
+<li>Provide definitions for <tt>squareStream : int stream</tt>
+  and <tt>cubeStream : int stream</tt> that correspond to the
+  sequences of the squares and the cubes of the natural numbers. Again
+  some examples of their use:
+<blockquote>
+<pre>
+# let (x,rst) = nextStream squareStream;;
+val x : int = 1
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 4
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 9
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream cubeStream;;
+val x : int = 1
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 8
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 27
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 64
+val rst : int stream = Stream &lt;fun&gt;
+#
+</pre>
+</blockquote>
+Hint: you can provide very simple definitions for these streams by
+using <tt>mapStream</tt>.
+<p>
+<li>Provide a definition for <tt>squarecubeStream : int
+  stream</tt> that corresponds to a stream of numbers that are both
+  the   squares and the cubes of other numbers. Some examples of the
+  use of this stream:
+<blockquote>
+<pre>
+# let (x,rst) = nextStream squarecubeStream;;
+val x : int = 1
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 64
+val rst : int stream = Stream &lt;fun&gt;
+# let (x,rst) = nextStream rst;;
+val x : int = 729
+val rst : int stream = Stream &lt;fun&gt;
+#
+</pre>
+</blockquote>
+I also want you to solve this problem in a particular way. The new
+stream should be generated by a function that does the following to
+determine the next element: it repeatedly generates items in the
+square and cube streams till it finds an item in common; the rest of
+the two streams will be kept around in the second "stream" component
+of the pair in a form needed to repeat the process.
+</ol>
+<p><hr><p>
+
+<h2>Problem 3 ((2 + 4) + 3 points)</h2>
+
+The way we defined streams in the previous problem was a bit
+inefficient: each time we looked at a stream, we would have to
+"evaluate" the function representing it to get the next item and the
+remaining stream. If this evaluation step is costly, we would like to
+avoid it. We can do this using the following idea: we allow the stream
+to be represented by either a pair or by a function that can be
+invoked to provide the pair. Moreover, we use a reference to store
+this object so that we can update it to avoid re-evaluation after
+we have done this once. To use this idea, we define
+the <i>stream</i> type as follows:
+<blockquote>
+<pre>
+type 'a stream' = Stream' of 'a stream_aux ref
+and  'a stream_aux =
+       | Evald of ('a * 'a stream')
+       | UnEvald of (unit -> 'a * 'a stream')
+</pre>
+</blockquote>
+Your task in this problem is to understand this definition and show
+that you have understood it by using it in a few definitions.
+<ol>
+<li>Provide definitions for the following functions that can be used
+  to create and probe streams using this new representation:
+<blockquote>
+<pre>
+mkStream' : (unit -> 'a * 'a stream') -> 'a stream'
+nextStream' : 'a stream' -> 'a * 'a stream'
+</pre>
+</blockquote>
+The first function should be easy to figure out. You have to be a bit
+careful in defining <i>nextStream'</i>. Here is why: if you
+"evaluate" the stream when you do a lookup, then you should modify it so
+that there is no evaluation needed the next time around.
+<p>
+<li>Provide a definition for <tt>natStream' : int stream'</tt> that is
+  like <tt>natStream</tt> from Problem 2, except that it uses the new
+  representation of streams.
+</ol>
+When you are all done with this problem, you should be able to produce
+interactions like the following:
+<blockquote>
+<pre>
+# natStream';;
+- : int stream' = Stream' {contents = UnEvald &lt;fun&gt;}
+# let (x,rst) = nextStream' natStream';;
+val x : int = 1
+val rst : int stream' = Stream' {contents = UnEvald &lt;fun&gt;}
+# natStream';;
+- : int stream' =
+Stream' {contents = Evald (1, Stream' {contents = UnEvald &lt;fun&gt;})}
+# let (x,rst) = nextStream' rst;;
+val x : int = 2
+val rst : int stream' = Stream' {contents = UnEvald &lt;fun&gt;}
+# natStream';;
+- : int stream' =
+Stream'
+ {contents =
+   Evald
+    (1, Stream' {contents = Evald (2, Stream' {contents = UnEvald &lt;fun&gt;})})}
+#
+</pre>
+</blockquote>
+Observe how the structure of <tt>natStream'</tt> gets more and more
+elaborated as we look for items in it; your code should exhibit a
+similar behaviour, this is the purpose of using references in this
+problem.
+
+<p><hr><p>
+<h2>Problem 4 (5 + 5 + 5 points)</h2>
+
+A while ago, we looked at the binary search tree definition and saw
+how we could use the idea of embedding functions in data to provide a
+type declaration that allowed us to say what ordering relation was
+relevant to the tree. This allowed us to realize
+polymorphism that was truly parametric, i.e. we no longer had to cross
+our fingers and hope that the <tt>&lt;</tt> relation "worked" on
+the type. In this problem, we will see how to realize this kind of
+polymorphism in a different way, using modules and functors. To keep
+the problem manageable in the limited time you have for it, I will
+give you almost all the code you have to write. Your task is to
+exhibit an understanding of modules and functors by adding a few lines
+of code to complete the definitions and by then using the definitions
+to create a few different kinds of binary search tree structures.
+<ol>
+<li>The file <a href="rbtree-sig.ml">rbtree-sig.ml</a> contains code
+  defining two signatures: the <tt>DATA</tt> signature and
+  the <tt>BTREE</tt> signature. The first signature identifies the kinds
+  of things that are needed over the data that we want to use as the
+  elements in a binary search tree. The <tt>BTREE</tt> signature
+  identifies what  functionality we will provide if we are able to
+  define a binary search tree structure over the corresponding
+  data. The file <a href="rbtree-mod.ml">rbtree-mod.ml</a> contains
+  code that we have seen before for realizing the different functions
+  based on a particular implementation---the red-black tree
+  implementation---of binary search trees. However, this code is
+  incomplete in two respects. First, it assumes available
+  a <i>Data</i> module that provides the functionality required by the
+  <tt>DATA</tt> signature. Second, it is missing a surrounding structure
+  that, after type checking, assures us that the code
+  in <i>rbtree-mod.ml</i> will in
+  fact realize all the expected functionality for binary search trees
+  if it is given <i>Data</i> structure that satisfies the properties
+  described by the <tt>DATA</tt> signature.
+  <p>
+  Your task is to complete this missing pieces. More specifically, put
+  all the code in the two files in a file called <i>rbtree.ml</i>. Then
+  surround the code you have copied from the
+  file <it>rbtree-mod.ml</tt> in a way that converts it into the
+  definition of a <i>functor</i> with the name <i>BTree</i> that
+  takes in a structure called <i>Data</i> that satisfies the
+  properties identified by the <tt>DATA</tt> signature and produces a
+  structure satisfying the properties identified by the <tt>BTREE</tt>
+  signature. Then load the file into an OCaml interactive session
+  and make sure that it compiles.
+  <p>
+  <b>Note:</b> that you <b>must</b> name the functor <i>BTree</i>,
+  this is important for us to be able to test your code.
+<p>
+<li>Now add to the file the definition of a structure
+  called <i>IntData</i> that meets the requirements
+  of <tt>DATA</tt>. Then, using this structure and the <i>BTree</i>
+  functor, complete the following definition:
+<blockquote>
+<pre>
+  module IntBTree = ...
+</pre>
+</blockquote>
+to realize a binary search tree structure over integer data. Test your
+code by building some integer binary search trees, searching them and
+printing them. We will test your code in this way, so it is a good
+idea to make sure it works.
+<p>
+<li>Finally, show the versatility of the code you have at this point
+  by using it to generate another binary search tree structure, this
+  time one that works over strings. Specifically, add to the file the
+  definition of a structure called <i>StringData</i> that meets the
+  requirements of <tt>DATA</tt> and use this together with
+  the <i>BTree</i> structure to complete the following definition:
+<blockquote>
+<pre>
+  module StringBTree = ...
+</pre>
+</blockquote>
+ Again, test your code by building, probing and printing a string
+ binary search tree.
+</ol>
+<p>
+In case you were wondering about the kind of behaviour to expect once
+you have filled out the definitions, here is what I get from my
+program. Note that the tree is printed as if it is lying on its side,
+the root to the left and the branches extending rightwards.
+<blockquote>
+<pre>
+# let inttree =
+        IntBTree.insert (1,
+         (IntBTree.insert (2,
+            (IntBTree.insert (3,
+               (IntBTree.insert (4,
+                  (IntBTree.insert (5,
+                      (IntBTree.insert (6,
+                         IntBTree.insert (7,
+                           IntBTree.insert (8,
+                             IntBTree.initTree ())))))))))))));;
+val inttree : IntBTree.btree = &lt;abstr&gt;
+# IntBTree.print stdout inttree;;
+      1
+    2
+  3
+    4
+5
+    6
+  7
+    8
+- : unit = ()
+# let strtree =
+        StringBTree.insert ("a",
+         (StringBTree.insert ("b",
+            (StringBTree.insert ("c",
+               (StringBTree.insert ("d",
+                  (StringBTree.insert ("e",
+                      (StringBTree.insert ("f",
+                         (StringBTree.insert ("g",
+                            (StringBTree.insert ("h",
+                               StringBTree.initTree ())))))))))))))));;
+val strtree : StringBTree.btree = &lt;abstr&gt;
+# StringBTree.print stdout strtree;;
+      "a"
+    "b"
+  "c"
+    "d"
+"e"
+    "f"
+  "g"
+    "h"
+- : unit = ()
+#
+</pre>
+</blockquote>
+You can actually adapt the code a bit to understand how the balancing
+is done, a question that Leland asked on Forum. Change the tree
+printing routine a bit to also display the colour of the node. Then
+see what happens to the tree as you insert nodes in it
+successively. This can be fun to watch!
+
+<p><hr><p>
+
+<address>
+Last modified: May 4, 2015. Created by gopalan atsign cs
+dot umn dot edu.
+<p><hr><p>
+<div id="disclaimer" style="font-weight: normal; clear: both; margin-top: 5px; font-size: small; font-style: italic;">The views and opinions expressed in this page are strictly those of the page author(s). The contents of this page have not been reviewed or approved by the University of Minnesota.</p></div></body>
+</address>
+
+</html>

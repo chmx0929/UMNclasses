@@ -1,0 +1,406 @@
+<html>
+<head>
+
+<title>CSCI 2041, Advanced Programming Principles</title>
+
+<center>
+<img align=bottom src="http://www.umn.edu/images/syssesqui.jpg"
+alt="[UMN logo]">
+</center>
+
+<center>
+<h1>
+CSCI 2041: Advanced Programming Principles<br>
+Spring 2041, University of Minnesota<br>
+Homework 2
+</h1>
+</center>
+
+<p><hr><p>
+
+<b>Posted:</b> Feb 6, 2015<br>
+<b>Due:</b> Feb 20, 2015 by 17:00 hours<br>
+
+<p>
+<hr>
+<p>
+<H2>Submission Protocol</h2>
+
+All of your work for this assignment must be in a file
+named <i>hw2.ml</i>. Include your solutions for the first problem in a
+comment in this file. Indicate the invariant for <tt>fib</tt> in
+Problem 2 in a comment preceding the definition of the
+function. Similarly, put your explanation of the use of
+the <tt>option</tt> in Problem 3 in a comment. 
+<i>Mark the solutions clearly as solutions to the corresponding
+  problems; this must be done in an OCaml comment line next to the
+  solution.</i> 
+This file must be submitted to your private git repository in this course's
+organization, i.e., umn-csci-2041S15/repo-abcde001. It must be accessible 
+from the root of this repository via the relative
+  path <i>hw2/hw2.ml</i>. The programming problems are specific about
+  the names of the types, functions and the types of the functions you
+  must define. You <b>must</b> stick to the requirements spelled out
+  in each case; if you don't do this, you will not get credit for what
+  you have done for that part. 
+
+<p>
+Before you start working on the homework, make sure to read the
+comments on <a href="index.html#hwprotocol">the protocol for homeworks
+    and the issues we consider when grading</a>. Note in particular
+that you must pay attention to the structure of your programs, you
+must not have excessively long lines and you must use indentation to
+make your program text readable. Also avoid tabs: they show up
+differently under different editors and can make your code look ugly.
+
+
+<p><hr><p>
+
+<h2>Problem 1 (3 + 3 points)</h2>
+
+For each of the purported function definitions below, indicate whether
+OCaml will determine that it is well-typed. If it is well-typed,
+indicate the type and go explicitly through the steps by which this
+type is determined as we did for <tt>append</tt> in class. If it is
+not well-typed, explain clearly and completely what the problem is; in
+other words, go through the process of trying to infer a type and then
+show the conflict that results in the type error.
+<p>
+You may of course use OCaml to check your intuitions about the
+definitions and typing but note that this by itself <b>will not</b>
+constitute an adequate answer to the question. You must go through
+the process of type checking/type inference as we discussed in class
+to reach the conclusion you state. 
+<ol>
+<li>This is an attempt to define the function <tt>zip</tt>
+<blockquote>
+<pre>
+  let rec zip lp =
+   match lp with 
+   | ([],_) -> []
+   | (_,[]) -> []
+   | ((x::l1),(y::l2)) -> (x,y) :: zip (l1,l2)
+</pre>
+</blockquote>
+<li>This time we are trying to define a <tt>reverse</tt> function
+<blockquote>
+<pre>
+let rec reverse l =
+   match l with 
+   | [] -> []
+   | (h::t) -> (reverse t) :: h
+</pre>
+</blockquote>
+</ol>
+
+<p><hr><p>
+
+<h2>Problem 2 (4 + 2 + 2 points) </h2>
+
+<ol>
+<li>Consider the following iterative program to compute the Fibonnaci of a
+positive number <tt>n0</tt>; as we did in class, we are using
+pseudo-OCaml in showing this iterative version
+<blockquote>
+<pre>
+  n = n0;
+  i = 1;
+  fib1 = 1;
+  fib2 = 1;
+  while (i != n) {
+    temp = fib1; 
+    fib1 = fib2;
+    fib2 = fib2 + temp;
+    i = i + 1
+  }
+  return fib1;
+</pre>
+</blockquote>
+As we did in class for <tt>fact</tt> and <tt>reverse</tt>, translate
+this form into a tail-recursive definition of a function
+called <tt>fib'</tt>. A hint to get you started: the function should
+have four or five arguments, depending on whether or not you decide to
+represent <tt>temp</tt> explicitly as an argument.
+<p>
+<li>Once you have written the definition of <tt>fib'</tt> present a one
+  line invariant describing what the function computes, based on
+  assumptions about its inputs.
+<p>
+<li>Using the <tt>fib'</tt> as an auxiliary nested function, write a
+  definition of the function <tt>fib : int -> int</tt> that computes
+  the Fibonnaci of its input,. Assume that this input is a positive
+  number. 
+</ol>
+
+<p><hr><p>
+
+<h2>Problem 3 (2 + 2 + 2 points)</h2>
+
+Revisit Problem 6 from Homework 1. Several questions were asked on
+Forum about how to deal with the situation when the database did not
+contain an entry for a particular person. Explain how you can fix this
+using the <tt>option</tt> type. Then redefine
+both <tt>find_salary</tt> and <tt>find_phno</tt> using this idea to 
+overcome the problem. 
+<p>
+<b>Note:</b> In case this is not already clear, we <i>are</i>
+expecting to see changed definitions for the two functions (with the
+same types as in Homework 1 except for the use of the <tt>option</tt>
+type to fix the problem we were having earlier) for this problem.
+
+<p><hr><p>
+
+<h2>Problem 4 (5 + 3 + 5 + 4 + 8 points)</h2>
+
+In this problem, we will consider using a binary search tree to
+represent a database such as the person database we considered in
+Problem 6 of Homework 1 and Problem 3 above. We will separate out one
+item of the tuples we want to represent as the <i>key</i> based on
+which we will organize the tree, and the remaining items will form
+the <i>data</i> corresponding to the key. The key is also often
+called the <i>index</i> to the data. For example, in the employee
+database, the key or index might be the name of the employee and the
+data may be a tuple consisting of the salary and the phone number. The 
+information in the data base would then be organized into a tree
+structure such as the following 
+<blockquote>
+<pre>
+                    (key1,data1)
+                     /       \
+                    /         \
+              (key2,data2)  (key3,data3)
+               /       \      /     \
+              /         \    /       \
+         (key4,data4) Empty Empty   (key5,data5)
+                        .  .   .
+</pre>
+</blockquote>
+In other words, the internal nodes of such trees hold the key and the data
+items, each internal node has a left and a right subtree and the
+leaves are empty trees. Of course, since this is a
+binary <i>search</i> tree, the organization is such that the keys in
+the left subtree at any point are smaller than the key at the node and
+the keys in the right subtree are larger than the key at the node;
+note that this property holds recursively as described. 
+<ol>
+<li> Provide a type declaration that identifies a type constructor
+  called <tt>btree</tt> that takes a pair of arguments corresponding
+  to the type of the key and the type of the data and associated value
+  constructors that can be used to represent trees of the form shown
+  above. After you have provided this declaration, we should be able
+  to write down OCaml expressions of type <tt>(ty1,ty2) btree</tt>,
+  for suitable types <tt>ty1</tt> and <tt>ty2</tt>, that represent
+  trees of the kind we are interested in. <br>
+  <b>Note:</b> The OCaml type system is not strong enough to capture
+  the ordering property for search trees, so don't spend time trying
+  to do this. Instead, this ordering property will be an invariant of
+  the trees we construct and manipulate through the functions we
+  write.
+<p>
+<li>Define a function of the following name and type 
+<blockquote>
+<pre>
+   find : ('a, 'b) btree -> 'a -> 'b option
+</pre>
+</blockquote>
+that takes a binary search tree and a key as input and that returns
+the data value stored in the tree corresponding to the key. Assume
+that there is exactly one entry per key in the tree. The return type
+has the <tt>option</tt> form in case the tree does not contain an entry
+corresponding to the given key. In defining this function you should
+obviously assume the invariant associated with binary search trees. 
+<p>
+<li>Define a function of the following name and type
+<blockquote>
+<pre>
+   insert : ('a, 'b) btree -> 'a -> 'b -> ('a, 'b) btree
+</pre>
+</blockquote>
+that takes a binary search tree, a key and a data item and returns a
+new binary search tree that corresponds to the old tree with the given
+key and data item pair inserted into it. (In case your experience with
+programming in languages such as Java or C is confusing you, we <b>do
+  not</b> modify the old tree in OCaml but we can reuse parts of it in
+constructing the new tree.) You should assume that the input tree
+satisfies the ordering invariant on binary search trees and your
+function is expected to preserve this invariant. One other question
+that often comes up: what should we do if the key already appears in
+the tree? The new tree should not have the old key and data
+association, it should have only the new one. 
+<p>
+One important question: what ordering relation to use on the key type?
+In this assignment, assume that the usual, overloaded ordering
+relations &lt; and &gt; and also the equality relation <tt>=</tt> will
+work on this type, i.e., you can use them directly in your code. We
+will think of better ways of handling this aspect in future
+assignments, after we have talked about higher-order functions.  
+<p>
+<li>Define a function of the following name and type
+<blockquote>
+<pre>
+   keylist : ('a, 'b) btree -> ('a list)
+</pre>
+</blockquote>
+that will traverse the tree and produce a list of the keys in it in
+the following order: first the keys in the left subtree will be
+listed, then the key at a node and then the keys in the right
+subtree. This kind of traversal is called an <i>in-order</i> traversal
+and it has the result of producing an ordered listing of the keys.
+<p>
+<li>Define a function of the following name and type
+<blockquote>
+<pre>
+  delete : ('a, 'b) btree -> 'a -> ('a, 'b) btree
+</pre>
+</blockquote>
+that takes a binary search tree and a key and returns a new binary
+search tree that corresponds to the old tree with a possible entry in
+it corresponding to the given key removed. Remember, you have to
+maintain the invariant for binary search trees in the process.<p>
+<b>Note:</b> This part is somewhat difficult, so do not get
+discouraged if you are not able to solve it to your
+satisfaction. However, give it your best shot, this will prepare you
+for understanding a solution when we discuss it in class. <p>
+<b>Hint:</b> Since it is a slightly harder part, a suggestion may be
+useful. First write a function that takes a non-empty tree and
+produces a new tree from it that does not contain what was at the
+root; in my code, I called this function <tt>delete_root</tt>. Then
+organize the <tt>delete</tt> function so that it locates the node to
+be removed and uses <tt>delete_root</tt> to do this.
+</ol>
+Remember the general requirements in this course; <b>Your type
+  constructor and functions must be named as we have described them
+  here and must have the types we have indicated for them so that we
+  can run automated tests on your program.</b> This is essential for
+  getting credit for the work.
+
+<p><hr><p>
+
+<h2>Problem 5 (4 + 10 points)</h2>
+
+In this problem we will look at representing simple expressions from
+OCaml in OCaml and doing some computations on them based on such a
+representation. The particular computation we will carry out in this
+problem is evaluating them, i.e., you will write an interpreter for
+them. Because 
+the collection of expressions is very limited, the task will be quite
+simple. However, it will expose you to the basic ideas underlying
+building interpreters and other programs of this sort and hence will
+get you prepared for more involved and exciting things of this kind
+that we will try later. 
+<p>
+First, for the expression language. The collection of expressions we
+will look at are captured by the following type declaration in OCaml
+<blockquote>
+<pre>
+type expr = 
+       Id of string                     (* for identifiers *)
+     | Int of int                       (* for integers *)
+     | Plus of expr * expr              (* for exp1 + exp2 *)
+     | Minus of expr * expr             (* for exp1 - exp2 *)
+     | Times of expr * expr             (* for exp1 * exp2 *)
+     | Div of expr * expr               (* for exp1 / exp2, integer division *)
+     | Lss of expr * expr               (* for exp1 < exp2 *)
+     | Eq of expr * expr                (* for exp1 = exp2, equality test *)
+     | Gtr of expr * expr               (* for exp1 > exp2 *)
+     | Cond of expr * expr * expr       (* for if exp1 then exp2 else exp3 *)
+     | Let of string * expr * expr      (* for let &lt;id&gt; = exp1 in exp2 *)
+</pre>
+</blockquote>
+Lets see some concrete examples of expressions of this type and their
+intended meaning. To denote the OCaml expression <tt>5 + 3</tt> we
+would use the following expression of type <tt>expr</tt>:
+<blockquote>
+<pre>
+Plus ((Int 5),(Int 3))
+</pre>
+</blockquote>
+To denote the OCaml expression <tt>let x = 5 in let y = 7 in x +
+  y</tt>, we would use the following expression of type <tt>expr</tt>:
+<blockquote>
+<pre>
+Let ("x",(Int 5),Let ("y",(Int 7),Plus ((Id "x"),(Id "y"))))
+</pre>
+</blockquote>
+Finally, to denote the OCaml expression
+<blockquote>
+<pre>
+let x = 5 in 
+  if ((x + 3) < 15) then 7 else 13
+</pre>
+</blockquote>
+we would use the following expression of type <tt>expr</tt>:
+<blockquote>
+<pre>
+Let ("x",
+     Int 5,
+     Cond (Lss (Plus (Id "x",Int 3),Int 15),
+           Int 7,
+           Int 13))
+</pre>
+</blockquote>
+Your task in this problem is twofold:
+<ol>
+<li>Construct 4 different expressions distinct from those shown above
+  and bind them to the names <tt>exp1</tt>,...,<tt>exp4</tt> through
+  let declarations. For example, to bind the first example above
+  to <tt>exp1</tt>, I did the following:
+<blockquote>
+<pre>
+let exp1 = Plus ((Int 5),(Int 3))
+</pre>
+</blockquote>
+<p>
+<li>Define a function of the following name and type
+<blockquote>
+<pre>
+   eval : expr -> (string * int) list -> int
+</pre>
+</blockquote>
+that takes an expression of type <tt>expr</tt>, assuming the indicated
+meaning for the different forms. For example, assuming <tt>exp1</tt>
+is bound as above, I should have something like the following
+interaction with OCaml:
+<blockquote>
+<pre>
+# eval exp1 [];;
+- : int = 8
+#
+</pre>
+</blockquote>
+The second argument for <tt>eval</tt> provides a binding for identifiers
+that may appear in the expression. The expressions we try to evaluate
+at the top level must not have unbound identifiers, so this list will
+initially be empty. However, as we descend into the bodies of let
+expressions, we have to carry along the bindings they create and we
+use this list argument for that purpose. Note that the this list, that
+is often referred to as an <i>environment</i> associates
+an <i>integer</i> with each string. The assumption here is that in a
+let, we evaluate the expression that the identifier is to be bound
+to <i>eagerly</i>, i.e. before we make the binding. 
+<p>
+We are assuming that <i>all</i> our expressions evaluate to
+integers. The question then is what the comparison forms
+(<tt>Lss</tt>, <tt>Eq</tt> and <tt>Gtr</tt>) should evaluate
+to. Assume that <i>true</i> is represented by <tt>1</tt>
+and <i>false</i> by <tt>0</tt>. Assume also that the condition of
+a <tt>Cond</tt> will always evaluate to one of these numbers;
+type-checking, that will come before we think of using our evaluator
+on expressions, will make sure that this condition holds. 
+<p>
+One final note: When evaluating an if-then-else, organize this so that
+you evaluate the then or the else part only on demand, i.e. after you
+have evaluated the condition and determined the case that needs to be
+evaluated. 
+</ol>
+
+<p><hr><p>
+
+<address>
+Last modified: Feb 8, 2015. Created by gopalan atsign cs
+dot umn dot edu.
+<p><hr><p>
+<div id="disclaimer" style="font-weight: normal; clear: both; margin-top: 5px; font-size: small; font-style: italic;">The views and opinions expressed in this page are strictly those of the page author(s). The contents of this page have not been reviewed or approved by the University of Minnesota.</p></div></body>
+</address>
+
+</html>

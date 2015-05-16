@@ -1,0 +1,302 @@
+<html>
+<head>
+
+<title>CSCI 2041, Advanced Programming Principles</title>
+
+<center>
+<img align=bottom src="http://www.umn.edu/images/syssesqui.jpg"
+alt="[UMN logo]">
+</center>
+
+<center>
+<h1>
+CSCI 2041: Advanced Programming Principles<br>
+Spring 2041, University of Minnesota<br>
+Homework 1
+</h1>
+</center>
+
+<p><hr><p>
+
+<b>Posted:</b> Jan 26, 2015<br>
+<b>Due:</b> Feb 6, 2015 by 17:00 hours<br>
+
+<p>
+<hr>
+<p>
+<H2>Submission Protocol</h2>
+
+All of your work for this assignment must be in a file named <i>hw1.ml</i>.
+Include your solutions for the first two problems in comments in this file. 
+<i>Mark the solutions clearly as solutions to the corresponding
+  problems; this must be done in an OCaml comment line next to the
+  solution.</i> 
+This file must be submitted to your private git repository in this course's
+organization, i.e., umn-csci-2041S15/repo-abcde001. It must be accessible 
+from the root of this repository via the relative
+  path <i>hw1/hw1.ml</i>. For the programming problems below, there
+  are further instructions about what kinds of functions you must
+  write and what their types must be. If these directions are not
+  followed precisely your homework will not be graded and you will not
+  get any credit for it.
+
+<p>
+Before you start working on the homework, make sure to read the
+comments on <a href="index.html#hwprotocol">the protocol for homeworks
+    and the issues we consider when grading</a>. Note in particular
+that you must pay attention to the structure of your programs, you
+must not have excessively long lines and you must use indentation to
+make your program text readable. Also avoid tabs: they show up
+differently under different editors and can make your code look ugly.
+
+
+
+
+<P><hr><p>
+
+<h2>Problem 1 (8 points)</h2>
+
+For each of the expressions below, indicate whether or not it is
+well-typed. If an expression is not well-typed, explain what the problem
+is. On the other hand, if the expression is well-typed, indicate what
+its type is and also what the value of the expression is.
+<ol>
+<li> <tt>1 - 2 - 3</tt>
+<p>
+<li> <tt>3.14 + 7</tt>
+<p>
+<li> <tt>3.14 *. 7</tt>
+<p>
+<li> <tt>if (3 < 2) then 5 else 7</tt>
+<p>
+<li> <tt>if (2 < 3) then 5 else "hello"</tt>
+<p>
+<li> <tt>if (3 = 2) then 7</tt>
+<p>
+<li> <tt>let f x = x ^ "world" in f "hello "</tt>
+<p>
+<li> <tt>let f x = x ^ "world" in f, "hello"</tt>
+</ol>
+
+<p><hr><p>
+
+<h2>Problem 2 (5 points) </h2>
+
+For each of the expressions below, indicate whether or not OCaml will
+deem it to be legal. If an expression is legal, present its type and
+its value. If it is not legal, explain what the problem is. Assume
+that there are no let bindings preceding these expressions, i.e., they
+are presented to OCaml in an empty context.
+<ol>
+<li><tt>let x = 1 in x + y</tt>
+<p>
+<li><tt>let x = 1 in let y = x + 1 in x + y</tt>
+<p>
+<li><tt>let x = 1 and y = x + 1 in x + y</tt>
+<p>
+<li><tt>let x x = x + 1 in x 2</tt>
+<p>
+<li><tt>let x = 1 in let x = x * 5 in x</tt>
+</ol>
+
+<p><hr><p>
+
+<h2>Problem 3 (5 points)</h2>
+
+The greatest common divisor (gcd) of two positive numbers is the
+largest number that is a factor of both. For example, the gcd of 6 and
+15 is 3, the gcd of 8 and 22 is 2 and the gcd of 7 and 21 is
+7. Algorithms for finding 
+the gcd of two numbers have been of much interest in mathematics and
+computer science because they are useful in computations relating to
+many fundamental properties of numbers; such properties are relevant,
+for example, in designing good encryption mechanisms for data.
+<p>
+One of the oldest algorithms for computing the gcd of two numbers is
+due to the Greek mathematician Euclid. This algorithm is based on the
+following observation: if the given positive numbers a and b are
+distinct and a is bigger than b, then their gcd is the same as that of
+a-b and b. (Exercise: try and prove this fact, it is not too
+difficult.) Thus, we can proceed as follows to find the gcd of two
+given numbers: if the numbers are identical, then the result is
+obvious. Otherwise, subtract the smaller of the numbers from the
+larger and try to find the gcd of the resulting number and the smaller
+number. 
+<p>
+Your task in this problem is to define an OCaml function that finds
+the gcd of two numbers based on the algorithm described above. More
+specifically, define a function of the following name and type
+<blockquote>
+<pre>
+    gcd : int -> int -> int
+</pre>
+</blockquote>
+that is based on the algorithm.
+<p>
+<b>Important:</b> Your code <b>must</b> have a function called gcd of
+the type shown that our automated tool can run to check if it work. If
+you do not have such a function, you will not get points for this question.
+
+<p><hr><p>
+
+<h2>Problem 4 (5 points)</h2>
+
+Define the function 
+<blockquote>
+<pre>
+fromMtoN : int -> int -> (int list)
+</pre>
+</blockquote>
+in OCaml that behaves as follows: Given the positive
+  numbers <tt>m</tt> and <tt>n</tt>, it produces a list of numbers from <tt>m</tt>
+  to <tt>n</tt>. If <tt>m</tt> is larger than <tt>n</tt>, then the
+  result should be the empty list. Some example outputs for the function
+<blockquote>
+<pre>
+# fromMtoN 3 7;;
+- : int list = [3; 4; 5; 6; 7]
+# fromMtoN 3 3;;
+- : int list = [3]
+# fromMtoN 7 3;;
+- : int list = []
+# 
+</pre>
+</blockquote>
+
+<b>Important:</b> Once again, make sure to have a function of the
+indicated name and type in the file you turn in; our automated tool
+will try to run it and you will not get any credit for the work if it
+fails to find such a function.
+
+<p><hr><p>
+
+<h2>Problem 5 (5 points)</h2>
+
+Define the function 
+<blockquote>
+<pre>
+everyEven : ('a list) -> ('a list)
+</pre>
+</blockquote>
+in OCaml that takes a list as input and produces from
+  it a   list that contains all the elements in even position in the
+  input list. Some example outputs for the function are the following:
+<blockquote>
+<pre>
+# everyEven [];;
+- : 'a list = []
+# everyEven [1; 2; 3; 4];;
+- : int list = [2; 4]
+# everyEven [1; 2; 3];;
+- : int list = [2]
+# everyEven ["a"; "string"; "list"; "is"; "also"; "okay"];;
+- : string list = ["string"; "is"; "okay"]
+</pre>
+</blockquote>
+
+<b>Important:</b> Again pay attention to the name of the function and
+also the type that it must have. Note in particular that it needs to
+be polymorphic in that it works on lists of any type of elements.
+<p>
+<i>Suggestion:</i> When I defined this function, I found it useful to
+do it mutually recursively with another function that I
+called <tt>everyOdd</tt> that selected all the elements in odd
+numbered positions in the list.
+
+<p><hr><p>
+
+<h2>Problem 6 (4 + 4 points)</h2>
+
+Suppose you are implementing a relational employee database, where
+the database is a list of tuples formed by the names, the phone numbers
+and the salaries of the employees. For example, a sample database may
+consist of the following list of tuples:
+<blockquote>
+<pre>
+[("John", "x3456", 50.1) ; ("Jane", "x1234", 107.3) ; ("Joan", "unlisted", 12.7)]
+</pre>
+</blockquote>
+Note that I have written parentheses around the tuples to make them
+more readable, but the precedences of different operators in OCaml
+make this unnecessary.
+<ol>
+<li>Define a function 
+<blockquote>
+<pre>
+find_salary : ((string * string * float) list) -> string -> float
+</pre>
+</blockquote> 
+that takes as input a list representing the database and the name of
+an employee and returns his/her corresponding   salary. Think also of
+some graceful way to deal with the situation where the database does
+not contain an entry for that particular name, explain it, and
+implement this in your code. 
+<p>
+<li>Define a function 
+<blockquote>
+<pre>
+find_phno : ((string * string * float) list) -> string -> string
+</pre>
+</blockquote> 
+that is like <tt>find_salary</tt>, except that it returns the phone number
+  instead. 
+</ol>
+
+<b>Important:</b> You must again adhere strictly to the given names
+and the types for the functions.
+
+<p><hr><p>
+
+<h2>Problem 7 (3 + 6  points)</h2>
+
+This problem deals with operations on matrices of numbers. To
+represent matrices, we will use a list of lists of numbers, where
+the i<sup>th</sup> list corresponds to the i<sup>th</sup> row of the
+matrix. For example, the list
+<blockquote>
+<pre>
+   [ [3; 17; 32]; [2; 10; 4]; [7; 5; 9] ]
+</pre>
+</blockquote>
+corresponds to a 3 &times; 3 matrix whose first row has the numbers 3,
+17 and 32, whose second row has the numbers 2, 10 and 4 and whose last
+row has the numbers 7, 5 and 9.
+<p>
+<ol>
+<li>For a list of lists of this kind to qualify as a matrix, every row
+  must have an equal number of columns. Define a function 
+<blockquote>
+<pre>
+is_matrix : (int list) list -> bool
+</pre>
+</blockquote>
+that returns <tt>true</tt> or <tt>false</tt> depending on whether or
+not the given list of lists of integers represents a "good" matrix.
+<p>
+<li>Define a function 
+<blockquote>
+<pre>
+transpose : (int list) list -> (int list) list
+</pre>
+</blockquote>
+that will generate the transpose of a matrix represented
+in this manner. For example, when <i>transpose</i> is given the
+matrix above as input, it should produce the output shown below:
+<blockquote>
+<pre>
+   [ [3; 2; 7]; [17; 10; 5]; [32; 4; 9] ]
+</pre>
+</blockquote>
+</ol>
+<b>Important:</b> Once again, make sure to adhere to the names and
+types of the functions asked for.
+<p><hr><p>
+
+<address>
+Last modified: January 31, 2015. Page maintained by gopalan atsign cs
+dot umn dot edu.
+<p><hr><p>
+<div id="disclaimer" style="font-weight: normal; clear: both; margin-top: 5px; font-size: small; font-style: italic;">The views and opinions expressed in this page are strictly those of the page author(s). The contents of this page have not been reviewed or approved by the University of Minnesota.</p></div></body>
+</address>
+
+</html>
