@@ -1,0 +1,71 @@
+# Add numbers depending of value at address px
+# if 0 => return (0x01) in %eax
+# if 1 => return (1 + 2 = 0x03) in %eax
+# if 2 => return (1 + 2 + 3 = 0x06) in %eax
+# if 3 => return (1 + 2 + 3 + 4 = 0x0a) in %eax
+# if 4 => return (1 + 2 + 3 + 4 + 5 = 0x0f) in %eax
+# CHANGE VALUE AT px and OBSERVE %eax
+
+/* $begin code-yso */
+/* $begin code-ysa */
+# Execution begins at address 0 
+	.pos 0 
+init:	irmovl Stack, %esp  	# Set up stack pointer  
+	irmovl Stack, %ebp  	# Set up base pointer   
+	call Main		# Execute main program
+	halt			# Terminate program 
+
+# Array of 4 elements
+	.align 4 	
+px:	.long 0x3		# CHANGE THIS 0 to 4 and WATCH %eax
+
+Main:	pushl %ebp 
+	rrmovl %esp,%ebp
+	irmovl px,%edx
+	pushl %edx      	# Push px
+	call sump		# Sump(px)
+	rrmovl %ebp,%esp
+	popl %ebp
+	ret 
+
+/* $begin sum-ys 0 */
+	# int Sum(int *Start, int Count)
+sump:	pushl %ebp
+	rrmovl %esp,%ebp
+	mrmovl 8(%ebp),%ecx 	# ecx = px
+	xorl %eax,%eax		# sump = 0
+	mrmovl (%ecx), %edx	# edx = *px
+
+finish:	addl %edx, %edx		# (*px * 2)
+	addl %edx, %edx		# (*px * 4)
+	mrmovl JTab(%edx), %esi	# get [JTab + (*px)]
+	pushl %esi		# push this address
+        ret			# run instruction above
+
+run5:	irmovl $5, %ebx
+	addl %ebx, %eax
+run4:	irmovl $4, %ebx
+	addl %ebx, %eax
+run3:	irmovl $3, %ebx
+	addl %ebx, %eax
+run2:	irmovl $2, %ebx
+	addl %ebx, %eax
+run1:	irmovl $1, %ebx
+	addl %ebx, %eax
+
+End:	rrmovl %ebp,%esp
+	popl %ebp
+	ret
+/* $end sum-ys 0 */
+
+JTab:	.long run1
+	.long run2
+	.long run3
+	.long run4
+	.long run5
+
+# The stack starts here and grows to lower addresses
+	.pos 0x100		
+Stack:	 
+/* $end code-ysa */
+/* $end code-yso */

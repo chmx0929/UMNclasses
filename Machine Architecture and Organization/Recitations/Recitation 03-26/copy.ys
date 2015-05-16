@@ -1,0 +1,182 @@
+# Initial code
+	irmovl Stack,%esp
+	rrmovl %esp,%ebp
+	irmovl 40,%ebx
+	pushl %ebx
+	irmovl dest,%ebx
+	pushl %ebx
+	irmovl src,%ebx
+	pushl %ebx
+	call copy_block
+	halt
+
+.align 4
+# Source array
+src:
+	.long 0x00a
+	.long 0x0b0
+	.long 0x100
+        .long 0x102
+        .long 0x123
+	.long 0x10a
+	.long 0x1b0
+	.long 0xcc0
+        .long 0x002
+        .long 0x023
+	.long 0x00a
+	.long 0x0b0
+	.long 0x100
+        .long 0x102
+        .long 0x123
+	.long 0x10a
+	.long 0x1b0
+	.long 0xcc0
+        .long 0x002
+        .long 0x023
+	.long 0x00a
+	.long 0x0b0
+	.long 0x100
+        .long 0x102
+        .long 0x123
+	.long 0x10a
+	.long 0x1b0
+	.long 0xcc0
+        .long 0x002
+        .long 0x023
+	.long 0x00a
+	.long 0x0b0
+	.long 0x100
+        .long 0x102
+        .long 0x123
+	.long 0x10a
+	.long 0x1b0
+	.long 0xcc0
+        .long 0x002
+        .long 0x023
+
+# Destination array
+dest:
+	.long 0x111
+	.long 0x222
+	.long 0x333
+        .long 0x444
+        .long 0x555
+	.long 0x111
+	.long 0x222
+	.long 0x333
+        .long 0x444
+        .long 0x555
+	.long 0x111
+	.long 0x222
+	.long 0x333
+        .long 0x444
+        .long 0x555
+	.long 0x111
+	.long 0x222
+	.long 0x333
+        .long 0x444
+        .long 0x555
+	.long 0x111
+	.long 0x222
+	.long 0x333
+        .long 0x444
+        .long 0x555
+	.long 0x111
+	.long 0x222
+	.long 0x333
+        .long 0x444
+        .long 0x555
+	.long 0x111
+	.long 0x222
+	.long 0x333
+        .long 0x444
+        .long 0x555
+	.long 0x111
+	.long 0x222
+	.long 0x333
+        .long 0x444
+        .long 0x555
+
+copy_block:
+	pushl %ebp		# Save %ebp
+	rrmovl %esp,%ebp	# Set Frame ptr
+	xorl %esi,%esi		# result = 0
+	mrmovl 8(%ebp),%ebx	# get src
+	mrmovl 12(%ebp),%ecx	# get dest
+	mrmovl 16(%ebp),%edx	# get len
+	andl %edx,%edx		# len : 0?
+	jle L4			# <=, goto done
+L5:			# Loop:
+	mrmovl (%ebx),%eax	# val = *src
+	irmovl $1,%edi
+	subl %edi,%edx		# len--
+	rmmovl %eax,(%ecx)	# *dest = val
+	irmovl $4,%edi
+	addl %edi,%ebx		# src++
+	addl %edi,%ecx		# dest++
+	xorl %eax,%esi		# result ^= val
+	#irmovl $4,%edi   
+        subl %edi, %edx 
+        jg L6
+        addl %edi, %edx
+	andl %edx,%edx		# len : 0?
+        je L4
+        addl %edi, %edx
+	andl %edx,%edx		# len : 0?
+	jg L5			# >, goto Loop
+L6:
+        #first iteration 
+        addl %edi, %edx         #restore value of len
+        mrmovl (%ebx),%eax	# val = *src
+	#irmovl $1,%edi
+	#subl %edi,%edx		# len--
+	rmmovl %eax,(%ecx)	# *dest = val
+	#irmovl $4,%edi
+	addl %edi,%ebx		# src++
+	addl %edi,%ecx		# dest++
+	xorl %eax,%esi		# result ^= val
+        #halt
+        #second iteration
+        mrmovl (%ebx),%eax	# val = *src
+	#irmovl $1,%edi
+	#subl %edi,%edx		# len--
+	rmmovl %eax,(%ecx)	# *dest = val
+	#irmovl $4,%edi
+	addl %edi,%ebx		# src++
+	addl %edi,%ecx		# dest++
+	xorl %eax,%esi		# result ^= val
+        #halt
+        mrmovl (%ebx),%eax	# val = *src
+	#irmovl $1,%edi
+	#subl %edi,%edx		# len--
+	rmmovl %eax,(%ecx)	# *dest = val
+	#irmovl $4,%edi
+	addl %edi,%ebx		# src++
+	addl %edi,%ecx		# dest++
+	xorl %eax,%esi		# result ^= val
+        #halt
+        mrmovl (%ebx),%eax	# val = *src
+	#irmovl $1,%edi
+	#subl %edi,%edx		# len--
+	rmmovl %eax,(%ecx)	# *dest = val
+	#irmovl $4,%edi
+	addl %edi,%ebx		# src++
+	addl %edi,%ecx		# dest++
+	xorl %eax,%esi		# result ^= val
+        #halt
+	irmovl $4,%edi   
+        subl %edi, %edx
+        subl %edi, %edx         #check if the value is less than 4
+        jg L6
+        addl %edi, %edx
+	andl %edx,%edx		# len : 0?
+	jg L5			# >, goto Loop
+ 
+L4:			# Done:
+	rrmovl %esi,%eax	# set return value
+	rrmovl %ebp,%esp	# remove frame
+	popl %ebp		# Restore %ebp
+	ret			# Return
+
+.pos 0x500
+Stack:
