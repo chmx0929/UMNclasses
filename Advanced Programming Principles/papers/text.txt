@@ -1,0 +1,4 @@
+<The OCaml Reference Manual>
+http://caml.inria.fr/pub/docs/manual-ocaml/
+<Real World Ocaml>
+https://realworldocaml.org/
