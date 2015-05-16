@@ -1,0 +1,9 @@
+# Code to demonstrate the risk of forwarding from a not-taken conditional move
+/* $begin cmov-noforward-ys */
+	irmovl $0x123,%eax
+	irmovl $0x321,%edx
+	xorl %ecx,%ecx		# CC = 100
+	cmovne	%eax,%edx	# Not transferred
+	addl %edx,%edx		# Should be 0x642
+	halt
+/* $end cmov-noforward-ys */

@@ -1,0 +1,9 @@
+# prog1: Pad with 3 nop's
+  irmovl $10,%edx
+  irmovl  $3,%eax
+  leal0 -8(%eax, %edx) #change by Kartik
+  nop
+  nop
+  nop
+  addl %edx,%eax
+  halt

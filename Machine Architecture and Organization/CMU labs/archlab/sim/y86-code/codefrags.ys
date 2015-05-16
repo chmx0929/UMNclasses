@@ -1,0 +1,13 @@
+    irmovl $9,  %edx
+    irmovl $21, %ebx
+    subl %edx, %ebx	   # subtract //line:arch:codefrags:subl
+    irmovl $128,%esp	   # Problem SLASHrefLBRACKprob:arch:traceirmovlRBRACK //line:arch:codefrags:irmovl
+    rmmovl %esp, 100(%ebx) # store //line:arch:codefrags:rmmovl
+    pushl %edx             # push //line:arch:codefrags:pushl
+    popl  %eax             # Problem SLASHrefLBRACKprob:arch:tracepoplRBRACK //line:arch:codefrags:popl
+    je done                # Not taken //line:arch:codefrags:je
+    call proc              # Problem SLASHrefLBRACKprob:arch:tracecallRBRACK //line:arch:codefrags:call
+done:
+    halt
+proc:
+    ret			   # Return //line:arch:codefrags:ret

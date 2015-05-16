@@ -1,0 +1,11 @@
+	irmovl $0xa1,%ebx
+	irmovl $0xbb00, %ecx
+	irmovl $0xa2,%ebx
+	irmovl $0xa3,%ebx
+	addl %ebx,%ecx
+	rmmovl %ecx,100(%esi)
+	irmovl $0x314,%eax
+	nop
+	nop
+	halt
+

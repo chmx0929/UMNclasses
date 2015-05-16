@@ -1,0 +1,12 @@
+# leal test
+  irmovl $128,%edx
+  irmovl $3,%ecx
+  irmovl $10,%ebx
+  irmovl $-4, %eax
+  leal0 $0(%edx,%eax)
+  leal1 $4(%ecx,%edx)
+  leal2 $128(%ecx,%ebx)
+  leal4 $-2(%ebx,%edx)
+  leal8 $1(%edx,%eax)
+  addl %ebx,%eax 
+  halt
