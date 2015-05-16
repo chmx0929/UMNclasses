@@ -1,0 +1,424 @@
+<html><head><title>CSCI 2041, Advanced Programming Principles</title></head>
+
+
+
+<body><center>
+<img align=bottom src="http://www.umn.edu/images/syssesqui.jpg"
+alt="[UMN logo]">
+</center>
+
+<h1><center>
+CSci 2041: Advanced Programming Principles<br>
+Spring 2015, University of Minnesota<br>
+Getting Started with Using OCaml
+</center>
+</h1>
+
+<p><hr><p>
+
+<h2>The purpose of this document</h2>
+
+We will spend time during the semester learning about nifty principles
+and techiques that underlie advanced modern-day programming. To test
+our understanding of what we learn, we will write actual code in
+OCaml. For us to be able to do this, we will also have to learn
+things about OCaml. This will happen slowly. OCaml is a new language
+for many of you so it is natural if you are nervous about working with
+it: all of us are nervous when we start with something new. However, I
+think you will get to enjoy the experience and, in the long run, will
+probably think twice before you decide to program in any language
+<i>other than</i> OCaml. I am only joking about this, there are other nice
+languages to program in, such as Python, Java (okay, maybe only
+sometimes), Haskell, etc, I mainly mean that I am hoping you will want
+to add OCaml to your repertoire after this term.
+
+<p>
+When you start programming in a new language, it is quite important to
+also get used to a mode in which to work with it. Usually, the end
+result of a programming endeavour is clear: you want to develop a
+piece of code that the end-user can run without paying attention to
+what language it was developed in or what principles were used in
+the process. We will see later how you can do this with programs you
+write in OCaml, i.e. how you can compile and link them and then run
+them in standalone mode. However, for us as programmers, the phase
+that is most important is the one in which we <i>develop</i> the
+program. During this phase we obviously have to pay attention to the
+language we use and the convenient ways to create and test programs in
+it. It is this that I am going to focus on in this document. I will
+explain to you how you can create and run some simple programs in
+OCaml and we will build on this in one of the early labs in the
+course. Try to understand the model carefully: doing so now can help
+you focus on the actual task you will need to tackle later, that of
+solving problems of interest by writing code that runs in OCaml.
+<p>
+<b>An editorial note</b>: you might find it easier to understand what is in
+this document by sitting down by a computer and actually typing up the
+pieces of code, directives, etc, that you find below. This is what I
+did when I created this document so I can guarantee that it will all
+run; your job will be to focus on what is happening when you do
+certain things and perhaps experiment a little based on questions that
+arise in your mind.
+
+<p><hr><p>
+
+<h2>The real stuff</h2>
+
+But let us get to the details. The typical mode in which we run OCaml
+when developing programs is an interactive one: when we start OCaml
+up, it gets into what we might call a "read-analyze-evaluate-display"
+loop. In this interaction loop  you can define functions and ask for
+expressions that use these functions to be evaluated; the "analyze"
+part of the description refers to the fact that there may be errors in
+what you present to OCaml, in which case it has to figure these errors
+out and tell you about them so that you can fix them and try again.
+
+<h3>Simple interactions with OCaml</h3>
+
+Let us get a bit more specific to understand these notions better. To
+start OCaml up, you would type <tt>ocaml</tt> at the command
+level. OCaml will then print some introductory text and present
+you with a prompt:
+</p><blockquote>
+<pre>gopalan@rishabh (~/teaching/umn/CSCI2041) % ocaml
+	OCaml version 4.01.0
+
+#
+</pre>
+</blockquote>
+Note the # in the last line above. This is OCaml's prompt: it signals
+that OCaml is ready for you to present it expressions that it will
+analyze and calculate for you.
+<p>
+Perhaps the simplest kind of expression that you can type in is an
+arithmetic one. An example interaction of this kind may be the
+following:
+<blockquote>
+<pre># 2 + 3 ;;
+- : int = 5
+#
+</pre>
+</blockquote>
+What has happened here is that the user has typed in the expression
+<tt>2 + 3</tt>, OCaml has calculated the value of the expression
+as 5, displayed this and it has then become ready for another
+expression to be input.
+<p>
+A few fine points to note in the above example.
+<ol>
+<li>The user typically needs to signify the end of the expression
+  he/she wants evaluated. At the interaction level, this is done by
+  typing <i>two semicolons</i>   at the end; this is why <tt>2 +
+  3</tt> is followed by these two
+semicolons.
+<li>Before OCaml evaluates an expression, it checks if it is type
+  correct. OCaml is what we call a <i>strongly typed language</i>:
+  what this means is that OCaml must know the type of an expression
+  before it even thinks of computing it. OCaml can often infer the
+  type of expressions, freeing you from having to be explicit
+  about every little detail. However, don't let this lull you into
+  complacency: as we will start to appreciate very early in the course,
+types determine the very structure of a program so you should <i>always</i>
+be thinking about them even if you do not write them out explicitly.
+In this case, OCaml was able to determine that the type of the
+expression it has been given is <tt>int</tt> (for integer).
+<li>Once OCaml has figured out the expression is syntactically okay
+  and that it also type-checks, it goes ahead and computes the
+  expression and displays the result to you together with the type it
+  has figured out for the expression. This is what you see in the
+  second line above, that line is what OCaml causes to be displayed.
+<li>Having completed this action, OCaml returns to the beginning of
+  the loop, i.e., it is ready for the next expression or interaction,
+  something that it signals by displaying the prompt again.
+</ol>
+
+<p>
+Lets pause for a moment here to consider a common kind of "mistake"
+one might make: what happens if you forget to type the two semicolons to
+end your input to OCaml? Not a problem: OCaml will think that you are
+continuing your input on to the next line so you can type the
+semicolons there. Similarly, you can spread your input across two
+lines. The following examples show these two kinds of interactions:
+<blockquote>
+<pre>
+# 2 + 3
+  ;;
+- : int = 5
+# 2 +
+   3;;
+- : int = 5
+#
+</pre>
+</blockquote>
+
+<h3>Binding identifiers to expressions</h3>
+
+In any significant programming task, you will typically want to build
+up what you want to compute in pieces: associate names with particular
+expressions, define functions that you can later use over these
+expressions, etc, and then eventually combine all of these to realize
+a complex computation. OCaml allows you to realize this style of
+programming essentially by giving you a mechanism to associate names
+with expressions. This is what is known as a <i>let
+declaration</i>.
+
+<h4>Simple let declarations</h4>
+
+The simplest form for a let declaration is the
+following:
+<blockquote>
+<pre>
+   let &lt;name&gt; = &lt;exp&gt; ;;
+</pre>
+</blockquote>
+Generally, when we write something within angle brackets (as we have
+done in writing <tt>&lt;name&gt;</tt> for example), we mean it to stand for a
+category of expressions. Here, <tt>&lt;name&gt;</tt> stands for a
+token that is recognized as a identifier (we won't get into the
+details here of what constitutes such a token, we will use simple
+examples for which things will be clear even without such an
+explanation) and <tt>&lt;exp&gt</tt> stands for OCaml expressions of
+the kind we have already seen.
+<p>
+Here is an example of the use of such a declaration.
+<blockquote>
+<pre>
+# let five = 2 + 3 ;;
+val five : int = 5
+# five ;;
+- : int = 5
+#
+</pre>
+</blockquote>
+In this interaction, we have first asked OCaml to associate the
+name <tt>five</tt> with the result of evaluating the expression <tt>2
+  + 3</tt>. OCaml tells us that it has done this through the display
+on the second line. Then we have checked that it has actually done
+this by asking it to evaluate the identifier <tt>five</tt>. OCaml
+responds in the way we have understood earlier.
+
+<h4>Binding a name to a function expression</h4>
+
+Let declarations can also be used to associate function expressions
+with names. The structure of such a declaration is the following
+<blockquote>
+<pre>
+  let &lt;fnname&gt; &lt;argname-1&gt; ... &lt;argname-n&gt; = &lt;exp&gt;
+</pre>
+</blockquote>
+We will understand various aspects of function expressions later in
+the course. For the moment, it is enough to understand the following:
+what such a binding does is associate a function with the identifier used
+for <tt>&lt;fnname&gt;</tt>. The function is something that
+essentially produces a value using <tt>&lt;exp&gt</tt> after replacing
+<tt>&lt;argname-1&gt;</tt>,...,<tt>&lt;argname-n&gt;</tt> in it by
+given values.
+
+<p>
+That was a mouthful! But the concept is very simple, especially when
+ you see it in an example. Here is one.
+<blockquote>
+<pre>
+# let plus x y = x + y ;;
+val plus : int -&gt; int -&gt; int = &lt;fun&gt;
+#
+</pre>
+</blockquote>
+What the declaration has done is associate the
+name <tt>plus</tt> with a function that takes two integers and
+produces an integer. This is what OCaml is telling us in the
+display. We can now use the function in further expressions:
+<blockquote>
+<pre>
+# plus 2 3 ;;
+- : int = 5
+#
+</pre>
+</blockquote>
+
+<h4>Binding a name to a recursive function expression</h4>
+
+The function above was quite simple. Often we will want to write more
+complex functions. One particular way in which the function might be
+complicated is that it may be <i>recursive</i>, i.e., it may use
+itself in its definition. We can still use a let
+declaration to bind such a function to a name but OCaml wants us to
+tell it first that we will be using the name in the definition
+itself. One way to do this is to use the keyword <tt>rec</tt> in the
+let declaration. Here is an example.
+<blockquote>
+<pre>
+# let rec fact n = if (n = 0) then 1 else n * (fact (n - 1)) ;;
+val fact : int -> int = &lt;fun&gt;
+#
+</pre>
+</blockquote>
+<b>Suggested Exercise</b>: Try defining <tt>fact</tt> by using a let
+declaration <i>without</i> the <tt>rec</tt> and try to understand the
+error message that OCaml will give you in this case.
+<p>
+Once we have built up a few associations of expressions with names, we
+can combine them into a larger expression as the following example
+shows.
+<blockquote>
+<pre>
+# fact (plus five 1) ;;
+- : int = 720
+#
+</pre>
+</blockquote>
+
+<h3>Interacting with OCaml through program files</h3>
+
+Up to this point, we have constructed all the expressions,
+associations of names with expressions, etc, directly through an
+interaction with OCaml. This may work for simple expressions but is
+quite difficult to sustain when the program gets more
+complicated. More importantly, it does not leave a record of the
+expressions that you have constructed once you close the interaction
+session. The last is a <i>serious</i> problem: usually, what you want to do is
+construct a program and check it through an interaction and then, once
+you have it working, you want to reuse all that code in other programs
+that you construct.
+<p>
+The way to realize the kind of interaction we really want is to
+construct the program separately in a data file so that it available
+beyond an interaction session. Then we "load" all the expressions, let
+declarations, etc, in the data file into an interaction session using
+a <i>use directive</i>. This way, the program persists beyond an
+interaction but what it contains can be used in any given interaction.
+
+<p>
+The structure of a use directive is the following.
+<blockquote>
+<pre>
+  #use &lt;filename&gt;
+</pre>
+</blockquote>
+This tells OCaml to load what is contained in the indicated file into
+the interactive session.
+<b>Note that the initial # is part of what you have to type</b>,
+i.e. it is part of the directive itself. It is in fact what tells
+OCaml that what follows is a directive and should not be confused what
+the name of an expression (We will see an example of one more
+directive in this introduction shortly.)
+
+<p>
+Here is a concrete example of the described process in the context of
+the few declarations we have considered. Let us supposed that we have
+put the following lines in a file called <tt>myfirst.ml</tt>.
+<blockquote>
+<pre>
+let five = 2 + 3
+let plus x y = x + y
+let rec fact n = if (n = 0) then 1 else n * (fact (n - 1))
+</pre>
+</blockquote>
+We can then load these declarations into an interaction session and
+use them as shown below.
+<blockquote>
+<pre>
+# #use "myfirst.ml";;
+val five : int = 5
+val plus : int -> int -> int = &lt;fun&gt;
+val fact : int -> int = &lt;fun&gt;
+# fact (plus five 1) ;;
+- : int = 720
+</pre>
+</blockquote>
+Pay careful attention to the response that OCaml displays as it
+loads the file. It is actually processing the declaration in the file
+one at a time and displaying what it would have done if the
+declaration had been typed in at the interaction
+level. <b>You must examine what OCaml displays carefully each time you
+  interact with it this way to convince yourself that it has
+accepted all the declarations.</b> In particular, OCaml will stop
+processing your declarations at the <i>first</i> error it finds, which
+means that your entire collection could be useless unless you can see
+that all of the declarations have been accepted without errors. One of
+the lab sessions will help you understand the different kinds of
+errors that the input can have also also the nuances of including
+declarations in an interactive session in this manner. However, do think
+about this matter beforehand to make that lab doubly useful.
+<p>
+A few further points about the example above:
+<ol>
+<li>Observe the extension <tt>.ml</tt> that I used for the file
+  containing the OCaml declarations. This is the extension for OCaml
+  programs by convention and you will find it useful to stick to it:
+  there are several useful tools that people have built that
+  function "automatically" on files with this extension and you will
+  eventually want to benefit from these tools.
+<li>You might have observed that I <i>did not</i> terminate each declaration
+with two semicolons in the file I created. OCaml does not need these
+because it can figure out the end of the declaration in other ways
+when these are contained in a file. You can use the semicolons in the
+file if you want, but I personally find them to be unnecessary clutter
+  and I therefore never use them in a file.
+</ol>
+
+<h3>Quitting OCaml</h3>
+
+When you are finished with your OCaml session, you would want to
+say "good bye" to OCaml gracefully. You can do this in one of two
+ways.
+<p>
+You can use the <i>quit</i> directive as shown below.
+<blockquote>
+<pre>
+# #quit;;
+gopalan@rishabh (~/teaching/umn/CSCI2041) %
+</pre>
+</blockquote>
+Notice that, like the use directive, this directive also starts with a
+#.
+<p>
+The other way to end an OCaml session is to type the end of input
+character that happens to be a <tt>^D</tt>. This appears a bit abrupt
+and also harsh but I think OCaml has gotten used to it by now---we
+have been parting company this way for several years now.
+
+<p><hr><p>
+
+<h2>A quick summary</h2>
+The description above was quite long but I do hope you learned some
+useful things by following along. After a long description, though, I
+always find a summary of the important points useful. In this case it
+is quite simple. Here is are the essence. When interacting with OCaml
+you do the following:
+<ul>
+<li>You assemble a collection of declarations in a file;
+<li>You load them into an interactive session using the use directive;
+<li>You make sure that OCaml accepts all of the declarations, else you
+  fix the code in the file and repeat the process;
+<li>Once you have made sure all the declarations have been accepted; and
+  you test them by asking OCaml to compute relevant expressions in the
+  ensuing interaction.
+</ul>
+
+<p><hr><p>
+
+<h2>Looking ahead</h2>
+
+Observe that the process of creating a program and debugging it is
+itself iterative. You can make the programming process easier by using
+an editor that supports this kind of interaction. In one of the early
+labs, you will be introduced to the editor called <i>emacs</i> that
+many people find extremely well-suited to this process: some people even
+refer to it as their "operating system" because of its versatility in
+this respect. You can use whichever editor you want, of course, but do
+check out what the TAs tell you before deciding what works best. Of
+course, you cannot learn a lot about emacs in a short lab
+session. However, the beauty is that even the few things that
+you will be exposed to will simplify the process a lot and then you can
+learn even more nifty things about emacs (such as emacs modes) over time.
+
+<p><hr><p>
+
+<address>
+Created by gopalan atsign cs dot umn dot edu. Last modified: Jan 15, 2015.
+
+<p><hr><p>
+<div id="disclaimer" style="font-weight: normal; clear: both; margin-top: 5px; font-size: small; font-style: italic;">The views and opinions expressed in this page are strictly those of the page author(s). The contents of this page have not been reviewed or approved by the University of Minnesota.</p></div></body>
+</address>
+
+</body></html>
