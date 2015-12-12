@@ -1,0 +1,46 @@
+Each record in a file has a unique identifier called a record id, or rid for
+short. An rid ha.'3 the property that we can identify the disk address of the
+page containing the record by using the rid.
+
+Data is read into memory for processing, and written to disk for persistent
+storage, by a layer of software called the buffer manager. When the files and
+access methods layer (which we often refer to as just the file layer) needs to
+process a page, it asks the buffer manager to fetch the page, specifying the
+page's rid. The buffer manager fetches the page from disk if it is not already
+in memory.
+Space on disk is managed by the disk space m,anager, according to the DBMS
+software architecture described in Section 1.8. When the files and access meth-
+ods layer needs additional space to hold new records in a file, it asks the disk
+space manager to allocate an additional disk page for the file; it also informs
+the disk space manager when it no longer needs one of its disk pages. The disk
+space manager keeps track of the pages in use by the file layer; if a page is freed
+by the file layer, the space rnanager tracks this, and reuses the space if the file
+layer requests a new page later on.
+
+
+data entry: records stored in an index file, contains enough information to locate data records. Denoted as k* with search key value k.
+
+Three ALTERNATIVES for what to store as a data entry in an index:
+1. A data entry k* is an actual data record (with search key value k).
+2. A data entry is a (k, rid) pair, where rid is the record id of a data record
+with search key value k.
+3. A data entry is a (k. rid-list) pair, where rid-list is a list of record ids of
+data records with search key value k.
+
+CLUSTERED: When a file is organized so that the ordering of data records is the same as
+or close to the ordering of data entries in some index, we say that the index
+is clustered;
+
+In our comparison of file organizations, and in later chapters, we use a simple
+cost model that allows us to estimate the cost (in terms of execution time) of
+different database operations. We use B to denote the number of data pages
+when records are packed onto pages with no wasted space, and R to denote
+the number of records per page. The average time to read or write a disk
+page is D, and the average time to process a record (e.g., to compare a field
+value to a selection constant) is C. In the ha.'3hed file organization, we use a
+function, called a hash function, to map a record into a range of numbers; the
+time required to apply the hash function to a record is H. For tree indexes, we
+will use F to denote the fan-out,
+CLUSTERED: When a file is organized so that the ordering of data records is the same as
+or close to the ordering of data entries in some index, we say that the index
+is clustered;

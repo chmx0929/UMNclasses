@@ -1,0 +1,157 @@
+create table student (
+	sid char(20),
+	sname char(50),
+	sex char(1),
+	age integer,
+	year integer,
+	gpa float,
+	primary key (sid));
+
+create table dept (
+	dname char(50),
+	numphds integer,
+	primary key (dname));
+
+create table prof (
+	pname char(50),
+	dname char(50),
+	primary key (pname));
+
+create table course (
+	cno char(20),
+	cname char(50),
+	dname char(50),
+	primary key (cno, dname));
+
+create table major (
+	dname char(50),
+	sid char(20),
+	primary key (dname, sid));
+
+create table section (
+	dname char(50),
+	cno char(20),
+	sectno char(20),
+	pname char(50),
+	primary key(dname, cno, sectno));
+
+create table enroll (
+	sid char(20),
+	grade float,
+	dname char(50),
+	cno char(20),
+	sectno char(20),
+	primary key(sid, dname, cno, sectno));
+
+Q1:
+select distinct prof.pname
+from prof, dept
+where prof.dname=dept.dname and dept.numphds<50;
+
+Q2:
+select student.sname
+from student
+where student.gpa = (select min(student.gpa)
+					 from student);
+
+Q3:
+select e.cno, e.sectno, avg(s.gpa)
+from enroll e, student s
+where e.dname='Computer Sciences' and e.sid=s.sid
+group by e.cno, e.sectno;
+
+Q4:
+select course.cname, e1.cno, e1.sectno
+from course, enroll e1
+where course.cno = e1.cno and course.dname = e1.dname
+		and e1.cno in (select e2.cno
+					   from enroll e2
+					   group by e2.cno
+					   having count(*) < 5
+					  );
+
+Q5:
+select student.sname, student.sid
+from student
+where student.sid = (select temp.sid
+					 from (select e.sid, count(e.sid) as count
+						   from enroll e
+				           group by e.sid) temp
+					 where temp.count=(select max(temp2.count)
+									   from (select e.sid, count(e.sid) as count
+											 from enroll e
+											 group by e.sid) temp2)
+					);
+
+Q6:
+select major.dname
+from major, student
+where major.sid = student.sid and student.age < 18
+group by major.dname
+having count(*) >= 1;
+
+Q7:
+select student.sname, major.dname
+from student, course, enroll, major
+where student.sid = enroll.sid and course.cno = enroll.cno
+	and course.dname = enroll.dname and major.sid = student.sid
+	and course.cname like 'College Geometry%';
+
+Q8:
+select d2.dname, d2.numphds
+from dept d2
+where d2.dname not in (select d1.dname
+					   from dept d1, major, (select student.sid
+											 from student, course, enroll
+											 where student.sid = enroll.sid and course.cno = enroll.cno
+												and course.dname = enroll.dname
+												and course.cname like 'College Geometry%'
+											) temp
+					   where d1.dname = major.dname and major.sid = temp.sid
+					  );
+
+
+Q9:
+(select s1.sname
+from student s1, enroll e1
+where s1.sid = e1.sid and e1.dname = 'Computer Sciences')
+intersect
+(select s2.sname
+from student s2, enroll e2
+where s2.sid = e2.sid and e2.dname = 'Mathematics');
+
+
+Q10:
+select maximum.age-minimum.age
+from (select min(s1.age) as age
+	  from student s1, major m1
+	  where s1.sid = m1.sid and m1.dname = 'Computer Sciences') minimum,
+	 (select max(s2.age) as age
+	  from student s2, major m2
+	  where s2.sid = m2.sid and m2.dname = 'Computer Sciences') maximum;
+
+Q11:
+select d2.dname, avg(s2.gpa)
+from dept d2, student s2, major m2
+where d2.dname=m2.dname and s2.sid = m2.sid and
+	  d2.dname in (select d1.dname
+				   from dept d1, student s1, major m1
+				   where d1.dname = m1.dname and s1.sid = m1.sid
+						and s1.gpa < 1.0
+				   group by d1.dname
+				   having count(*) >= 1)
+group by d2.dname;
+
+Q12:
+select s1.sid, s1.sname, s1.gpa
+from student s1
+where not exists (select c1.cno
+				  from course c1
+				  where c1.dname = 'Civil Engineering'
+						and not exists (select e1.cno
+										from enroll e1
+										where c1.cno = e1.cno and s1.sid = e1.sid
+									   )
+				 );
+
+

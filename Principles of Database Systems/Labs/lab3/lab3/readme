@@ -1,0 +1,21 @@
+Group Members:
+1. Hao Wang		(wang5167)
+2. Rain Xuanyu Zhang	(zhan2223)
+
+Modified source code files:
+1. src/backend/storage/buffer/freelist.c
+2. src/backend/storage/buffer/bufmgr.c
+3. src/include/storage/buf_internals.h
+
+How we modified each code files:
+1. freelist.c
+   This is the place where out main LRU algorithm goes, and we enclosed the code with in a if statement from line 191 to 218. Two variables currentMinTimeStamp and BufferStrategyControl will keep track of the least recently used available buffer frame that will be replaced. The enclosed for loop will loop through all buffers in current buffer frame and find the buffer frame with the least time stamp value (the oldest buffer frame) and return. If all buffer frames are currently in use (pinpoint > 0), and error message will thus be raised.
+
+2. bufmgr.c
+   On line 66 we added a integer type timer(globalTimer = 1) to be the timer. When ever a pincount of a buffer frame goes down to zero, a time stamp will be given to the buffer frame and then the timer defined in bufmgr.c will increase by 1.
+   Above logic is added on line 1177-1181, which will check the current pinpoint of the buffer frame first, if no one is currently using this buffer frame, assign timer to this buffer and add one to the timer.
+
+3. buf_internals.h
+   We added a timer (int type) property to the BufferDesc datatype on line 146. This variable will keep track of the last time when this specific buffer frame’s pinpoint goes down to zero.
+
+

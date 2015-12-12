@@ -1,0 +1,38 @@
+./bin/postgres -B 200 -D data/
+
+CLOCK SWEEP:
+
+values10k.dat buffertest1.sql
+-----------------
+00:00:00.18741
+
+values10k.dat buffertest2.sql
+-----------------
+00:00:00.399316
+
+values100k.dat buffertest1.sql
+-----------------
+00:00:00.300057
+
+values100k.dat buffertest2.sql
+-----------------
+00:00:00.536458
+
+
+FIFO:
+
+values10k.dat buffertest1.sql
+-----------------
+00:00:00.179915
+
+values10k.dat buffertest2.sql
+-----------------
+00:00:00.308247
+
+values100k.dat buffertest1.sql
+-----------------
+00:00:00.292917
+
+values100k.dat buffertest2.sql
+-----------------
+00:00:00.432653

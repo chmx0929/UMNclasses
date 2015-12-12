@@ -1,0 +1,270 @@
+1. Create the table “student” with five attributes: the student identifier as the primary key, the student
+name, student major, student standing (freshman/sophomore/junior/senior), and the student age.
+
+CREATE TABLE student (
+    sid CHAR(20),
+    name CHAR(50),
+    major CHAR(30),
+    standing CHAR(9),
+    age INTEGER,
+    PRIMARY KEY (sid));
+
+LOG:
+Table created.
+
+
+2. Create the table “class” with three attributes: the class name as the primary key, the class schedule
+time, and the room number. Make sure that no two classes have the same combination of schedule
+and room.
+
+CREATE TABLE class (
+	cname CHAR(30),
+	schedule CHAR(40),
+	room CHAR(30),
+	PRIMARY KEY (cname),
+	UNIQUE (schedule, room));
+
+LOG:
+Table created.
+
+
+3. Create the table “enrolled” that specifies which student is taking which class. The table will have two
+attributes: the student identifier, and the class name. A student can register in many classes. As-
+sume any key constraints as appropriate. Make sure that in the case of deleting a student from the
+student table, all entries to this student will be deleted from the enrolled table. Also, reject the dele-
+tion of any course that has any enrolled students.
+
+CREATE TABLE enrolled (
+	sid CHAR(20),
+	cname CHAR(30),
+	PRIMARY KEY (sid, cname),
+	FOREIGN KEY (sid) 
+		REFERENCES student (sid)
+		ON DELETE CASCADE,
+	FOREIGN KEY (cname)
+		REFERENCES class (cname)
+);
+
+LOG:
+Table created.
+
+
+4. Insert the following eight entries into the student table:
+051135593, Maria White, English, SR, 21
+060839453, Charles Harris, Architecture, SR, 22
+099354543, Susan Martin, Law, JR, 20
+112348546, Joseph Thompson, Computer Science, SO, 19
+115987938, Christopher Garcia, Computer Science, JR, 20
+132977562, Angela Martinez, History, SR, 20
+269734834, Thomas Robinson, Psychology, SO, 18
+280158572, Margaret Clark, Animal Science, FR, 18
+
+INSERT
+INTO student (sid, name, major, standing, age)
+VALUES ('051135593', 'Maria White', 'English', 'SR', 21);
+
+INSERT
+INTO student (sid, name, major, standing, age)
+VALUES ('060839453', 'Charles Harris', 'Architecture', 'SR', 22);
+
+INSERT
+INTO student (sid, name, major, standing, age)
+VALUES ('099354543', 'Susan Martin', 'Law', 'JR', 20);
+
+INSERT
+INTO student (sid, name, major, standing, age)
+VALUES ('112348546', 'Joseph Thompson', 'Computer Science', 'SO', 19);
+
+INSERT
+INTO student (sid, name, major, standing, age)
+VALUES ('115987938', 'Christopher Garcia', 'Computer Science', 'JR', 20);
+
+INSERT
+INTO student (sid, name, major, standing, age)
+VALUES ('132977562', 'Angela Martinez', 'History', 'SR', 20);
+
+INSERT
+INTO student (sid, name, major, standing, age)
+VALUES ('269734834', 'Thomas Robinson', 'Psychology', 'SO', 18);
+
+INSERT
+INTO student (sid, name, major, standing, age)
+VALUES ('280158572', 'Margaret Clark', 'Animal Science', 'FR', 18);
+
+LOG:
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+
+
+5. Insert the following four entries into the class table:
+Data Structures, MWF 10:00-11:00, R128
+Database Systems, MWF 12:30-1:45, 1320 DCL
+Operating System Design, TuTh 12-1:20, 20 AVW
+Archaeology of the Incas, MWF 3-4:15, R128
+
+INSERT
+INTO class (cname, schedule, room)
+VALUES ('Data Structures', 'MWF 10:00-11:00', 'R128');
+
+INSERT
+INTO class (cname, schedule, room)
+VALUES ('Database Systems', 'MWF 12:30-1:45', '1320 DCL');
+
+INSERT
+INTO class (cname, schedule, room)
+VALUES ('Operating System Design', 'TuTh 12-1:20', '20 AVW');
+
+INSERT
+INTO class (cname, schedule, room)
+VALUES ('Archaeology of the Incas', 'MWF 3-4:15', 'R128');
+
+LOG:
+1 row created.
+1 row created.
+
+
+6. Insert the following seven entries into the enrolled table
+051135593, Data Structures
+060839453, Data Structures
+051135593, Database Systems
+060839453, Database Systems
+051135593, Operating System Design
+099354543, Operating System Design
+112348546, Operating System Design
+
+INSERT
+INTO enrolled (sid, cname)
+VALUES ('051135593', 'Data Structures');
+
+INSERT
+INTO enrolled (sid, cname)
+VALUES ('060839453', 'Data Structures');
+
+INSERT
+INTO enrolled (sid, cname)
+VALUES ('051135593', 'Database Systems');
+
+INSERT
+INTO enrolled (sid, cname)
+VALUES ('060839453', 'Database Systems');
+
+INSERT
+INTO enrolled (sid, cname)
+VALUES ('051135593', 'Operating System Design');
+
+INSERT
+INTO enrolled (sid, cname)
+VALUES ('099354543', 'Operating System Design');
+
+INSERT
+INTO enrolled (sid, cname)
+VALUES ('112348546', 'Operating System Design');
+
+LOG:
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+
+
+7. Check for the primary constraint; insert the following entry into the student table:
+112348546, Juan Rodriguez, Psychology, JR, 20
+
+INSERT
+INTO student (sid, name, major, standing, age)
+VALUES ('112348546', 'Juan Rodriguez', 'Psychology', 'JR', 20);
+
+LOG:
+INSERT
+*
+ERROR at line 1:
+ORA-00001: unique constraint (F14CS4707G14.SYS_C00154020) violated
+
+
+8. Check for the uniqueness constraint; insert the following entry into the class table
+Algorithms, MWF 12:30-1:45, 1320 DCL
+
+INSERT
+INTO class (cname, schedule, room)
+VALUES ('Algorithms', 'MWF 12:30-1:45', '1320 DCL');
+
+LOG:
+NSERT
+*
+ERROR at line 1:
+ORA-00001: unique constraint (F14CS4707G14.SYS_C00154027) violated
+
+
+9. Check for foreign constraints; insert the following two entries into the enrolled table:
+561254634, Data Structures
+051135593, Communication Networks
+
+INSERT
+INTO enrolled (sid, cname)
+VALUES ('561254634', 'Data Structures');
+
+LOG:
+INSERT
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (F14CS4707G14.SYS_C00154029) violated - parent
+key not found
+
+
+INSERT
+INTO enrolled (sid, cname)
+VALUES ('051135593', 'Communication Networks');
+
+LOG:
+INSERT
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (F14CS4707G14.SYS_C00154033) violated - parent
+key not found
+
+
+10. Check for the integrity constraints; delete the following entry from the class table:
+Data Structures, MWF 10:00-11:00, R128
+
+DELETE
+FROM class
+WHERE class.cname = 'Data Structures';
+
+LOG:
+DELETE
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (F14CS4707G14.SYS_C00154033) violated - child
+record found
+
+
+11. Check for the integrity constraints; delete the following entry from the student table:
+051135593, Maria White, English, SR, 21
+
+DELETE
+FROM student
+WHERE student.sid = '051135593';
+
+LOG:
+1 row deleted.
+(Also, we issued a SELECT command on the enrolled table and verified that all data with sid='051135593' is deleted.)
+
+12. Drop ALL of the created tables.
+
+DROP TABLE enrolled;
+DROP TABLE student;
+DROP TABLE class;
+
+LOG:
+Table dropped;
+Table dropped;
+Table dropped;

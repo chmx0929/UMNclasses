@@ -1,0 +1,184 @@
+SQL> @lab2.sql
+1.
+	PNAME                                                                           
+	--------------------------------------------------------------------------------
+	Edison, L.                                                                      
+		                                                                        
+		                                                                        
+	Jones, J.                                                                       
+		                                                                        
+		                                                                        
+	Brian, C.                                                                       
+		                                                                        
+		                                                                        
+	Smith, S.                                                                       
+
+		                                                                        
+	Walter, A.                                                                      
+		                                                                        
+		                                                                        
+	Bucket, T.                                                                      
+		                                                                        
+		                                                                       
+	6 rows selected.
+
+2.
+	SNAME                                                                           
+	--------------------------------------------------------------------------------
+	Jetplane, Leaving O.                                                            
+                                                                                
+                                                                                
+
+3.
+       CNO     SECTNO AVG(S.GPA)                                                
+	---------- ---------- ----------                                                
+       467          1       2.98                                                
+       701          1 3.28333333                                                
+       302          2      3.075                                                
+       302          1          3                                                
+       726          1 2.64117647                                                
+
+4.
+	CNAME
+	--------------------------------------------------------------------------------
+	CNO 
+	----------    
+	SECTNO
+	---------- 
+	Advanced Garbage Collection
+		   561	    
+		   1
+
+5.
+	SNAME                                                                           
+	--------------------------------------------------------------------------------
+	SID                                                                      
+	----------                                                                      
+	Hamilton, S.                                                                    
+																					
+			29                                                                      
+                                                                                
+
+6.
+	DNAME                                                                           
+	--------------------------------------------------------------------------------
+	Industrial Engineering                                                          																																										
+	Mathematics                                                                     
+																					
+                                                                                
+
+7.
+	SNAME                                                                           
+	--------------------------------------------------------------------------------
+	DNAME                                                                           
+	--------------------------------------------------------------------------------
+	Bates, Michael L.                                                               																				
+	Mathematics                                                                     
+																																										
+	Sulfate, Barry M.                                                               																					
+	Mathematics                                                                     
+																					
+	Thorton, James Q.                                                               																					
+	Mathematics                                                                     
+																																										
+	Gooch                                                                           																					
+	Mathematics                                                                     																					
+																					
+	Smith, L.                                                                       																					
+	Mathematics                                                                     																					
+																					
+	Austin, G.                                                                      
+	Mathematics                                                                     
+																																										
+	Mathews, John W.                                                                																					
+	Mathematics                                                                     																					
+																					
+	Glitch, R.                                                                      																					
+	Mathematics                                                                     
+																																										
+	Uoiea, Z.                                                                       																					
+	Mathematics                                                                     
+
+	Davis, Scott P.                                                                 																					
+	Mathematics                                                                     
+																					
+	Cheong, R.                                                                      																					
+	Mathematics                                                                     
+																					
+	Ford, Gerald                                                                    																					
+	Mathematics                                                                     
+																																										
+	Dunbar, D.                                                                      																					
+	Mathematics                                                                     																					
+																					
+	Rosemeyer, S.                                                                   																					
+	Mathematics                                                                     
+																																										
+	Atny, Mary H.                                                                   
+	Mathematics                                                                     
+																																										
+	Ziebart, F.                                                                     																				
+	Mathematics                                                                     
+																																										
+	Zappa, F.                                                                       																					
+	Mathematics                                                                     
+																																										
+	Ghandi, I.                                                                      																					
+	Mathematics                                                                     
+																																										
+	18 rows selected.
+
+8.
+	DNAME                                                                           
+	--------------------------------------------------------------------------------
+	NUMPHDS                                                                         
+	--------------------------------------------------------------------------------
+																																			
+	Industrial Engineering                                                          																					
+	41                                                                              
+                                                       
+                                                                              
+9.
+	SNAME                                                                           
+	--------------------------------------------------------------------------------
+	Zappa, F.                                                                       
+                                                                                
+                                                                                
+
+10.
+	MAX(S.AGE)-MIN(S.AGE)                                                           
+	---------------------                                                           
+					   38                                                           
+
+11.
+	DNAME
+	--------------------------------------------------------------------------------
+	AVG(S.GPA)
+	
+	Computer Sciences
+		3.00416667
+
+	Industrial Engineering
+		2.77
+
+	Civil Engineering
+		2.91428571
+		
+12.
+	SID
+	----------
+	SNAME
+	--------------------------------------------------------------------------------
+	GPA
+	----------
+	29
+	Hamilton, S.
+	2.8
+
+
+
+
+                                    
+
+
+SQL> spool off

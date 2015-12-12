@@ -1,0 +1,13 @@
+INSERT INTO  course (cno, cname, dname) VALUES (302,	'Intro to Programming',		'Computer Sciences');
+INSERT INTO  course (cno, cname, dname) VALUES (310, 	'Thermodynamics', 		'Chemical Engineering');
+INSERT INTO  course (cno, cname, dname) VALUES (310, 	'Intro to Garbage', 	'Sanitary Engineering');
+INSERT INTO  course (cno, cname, dname) VALUES (365,	'City Planning',	'Civil Engineering');
+INSERT INTO  course (cno, cname, dname) VALUES (375,	'Highway Engineering',	'Civil Engineering');
+INSERT INTO  course (cno, cname, dname) VALUES (461,	'College Geometry 1',	'Mathematics');
+INSERT INTO  course (cno, cname, dname) VALUES (462,	'College Geometry 2',	'Mathematics');
+INSERT INTO  course (cno, cname, dname) VALUES (467,	'Intro to Data Structures',	'Computer Sciences');
+INSERT INTO  course (cno, cname, dname) VALUES (514,	'Manpower Utilization',	'Industrial Engineering');
+INSERT INTO  course (cno, cname, dname) VALUES (561,	'Advanced City Planning',	'Civil Engineering');
+INSERT INTO  course (cno, cname, dname) VALUES (561,	'Advanced Garbage Collection',	'Sanitary Engineering');
+INSERT INTO  course (cno, cname, dname) VALUES (701,	'Compiler Construction',	'Computer Sciences');
+INSERT INTO  course (cno, cname, dname) VALUES (726,	'Nonlinear Programming',	'Computer Sciences');

@@ -1,0 +1,13 @@
+1. Group Member:
+	1. Yangyun Li  lixx3524 5026569
+	2. Shiyi Li    lixx2233 4576123
+	3. Zixuan Wang wang5549 5105013
+
+
+
+2. Source code files that we modified:  1. /home/lixx3524/DBMS/src/backend/storage/buffer/freelist.c
+						line: 21 and 192-314
+					2. /home/lixx3524/DBMS/src/include/storage/buf_internals.h
+						line: 57
+
+3. At first, we define a new type to control which replace policy that we want to use. The type is REPLACE_POLICY. When the value of REPLACE_POLICY is 0, we use FIFO policy. When the value of REPLACE_POLICY is 1, we use the original clock sweep policy. Secondly, we need to define the FIFO algorithm. In this algorithm, we need to scan from the first slot of the buffer. So we assign StrategyControl->nextVictimBuffer to 0. And then, we need to see the whether this buffer has been pinned. If not, we can return it. If it has been pinned, we continue to check the next buffer. We keep doing those steps until we find an usable buffer. If we scan the whole buffer pool and find no usable buffer, return null and print error.

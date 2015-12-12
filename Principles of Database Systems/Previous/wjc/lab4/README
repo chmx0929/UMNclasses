@@ -1,0 +1,25 @@
+1.
+Junfu Chen
+4684872
+
+Guanhua Piao
+
+We worked on the project together.
+
+2. Modified files:
+/backend/executor/Makefile
+/backend/optimizer/plan/createplan.c
+/backend/optimizer/plan/planner.c
+/backend/parser/analyze.c
+/backend/parser/gram.y
+/include/nodes/nodes.h
+/include/nodes/parsenodes.h
+/include/parser/kwlist.h
+/backend/executor/nodeIgnore.c
+/backend/executor/nodeIgnore.h
+/backend/parser/parse_clause.c
+
+3. Modification of the code:
+The basic logic of "IGNORE" is quite similar to that of "LIMIT". So basically, we modified the parser so that it could read the "IGNORE k" message from the user. Then we modified the planner so that it could render a plan query with "IGNORE". At last, we implement the logic of "IGNORE", which is basically leaving out the first k tuples when processing. The code is not giving us the results as expected, but we spent a lot of time and tried our best on it.
+
+4. In our implementation, only queries like "select employees.salary from employees ignore 10" will be able to use "IGNORE". The union and other operations conjucting queries are also able to use "IGNORE"

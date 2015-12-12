@@ -1,0 +1,20 @@
+
+
+***********************************************************************
+Fatal NI connect error 12545, connecting to:
+ (DESCRIPTION=(ADDRESS=(PROTOCOL=beq)(PROGRAM=./bin/oracle)(ARGV0=oracleo11g)(ARGS='(DESCRIPTION=(LOCAL=YES)(ADDRESS=(PROTOCOL=beq)))')(DETACH=NO))(CONNECT_DATA=(CID=(PROGRAM=sqlplus)(HOST=kh4250-18)(USER=lixx3524))))
+
+  VERSION INFORMATION:
+	TNS for Linux: Version 10.1.0.5.0 - Production
+	Oracle Bequeath NT Protocol Adapter for Linux: Version 10.1.0.5.0 - Production
+	TCP/IP NT Protocol Adapter for Linux: Version 10.1.0.5.0 - Production
+  Time: 02-MAR-2015 18:29:44
+  Tracing not turned on.
+  Tns error struct:
+    ns main err code: 12545
+    TNS-12545: Message 12545 not found; No message file for product=network, facility=TNS
+    ns secondary err code: 12560
+    nt main err code: 515
+    TNS-00515: Message 515 not found; No message file for product=network, facility=TNS
+    nt secondary err code: 2
+    nt OS err code: 0

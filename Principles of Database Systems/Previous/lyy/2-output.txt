@@ -1,0 +1,114 @@
+SQL> @/home/lixx3524/4707/1-SQL.sql
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+INSERT INTO student(sid,name,major,standing,age)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (S15C4707G54.SYS_C00195344) violated
+
+
+INSERT INTO class(course_name,schedule,room_number)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (S15C4707G54.SYS_C00195346) violated
+
+
+INSERT INTO enrolled(sid,course_name)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (S15C4707G54.SYS_C00195348) violated - parent
+key not found
+
+
+INSERT INTO enrolled(sid,course_name)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (S15C4707G54.SYS_C00195349) violated - parent
+key not found
+
+
+delete
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (S15C4707G54.SYS_C00195349) violated - child
+record found
+
+
+
+1 row deleted.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+SQL> 
+

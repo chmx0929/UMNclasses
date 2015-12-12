@@ -1,0 +1,10 @@
+Group Member:
+1. Junfu Chen (chen3111)
+2. Guanhua Piao (piaox008)
+
+Source code files modified:
+postgresql-9.2.1/src/backend/storage/buffer/freelist.c
+
+Modifications to the code:
+1. In the beginning of the file, we defined "FIFO". If "FIFO" is true, the FIFO algorithm will be executed. If "FIFO" is false, the original clock sweep algorithm will be executed.
+2. For the FIFO algorithm, each time we need to replace a buffer, we start from the first buffer in the buffer pool. If it is not pinned, we return it. If it is pinned, we will move on to the next buffer in the buffer pool. We keep doing that until we find a usable buffer or return null and print an error if every buffer in the buffer pool is pinned. (we don't want to take the risk that we may be stuck in the infinite loop by looping through the buffer pool over and over again).

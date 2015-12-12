@@ -1,0 +1,113 @@
+SQL> @lab1.sql
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+INSERT INTO student (StudentID, StudentName, StudentMajor, StudentStanding, StudentAge)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (S15C4707G53.SYS_C00192946) violated 
+
+
+INSERT INTO classes (ClassName, ScheduleTime, RoomNumber)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (S15C4707G53.SYS_C00192948) violated 
+
+
+INSERT INTO enrolled (StudentID, ClassName)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (S15C4707G53.SYS_C00192950) violated - parent 
+key not found 
+
+
+INSERT INTO enrolled (StudentID, ClassName)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (S15C4707G53.SYS_C00192951) violated - parent 
+key not found 
+
+
+DELETE FROM classes
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (S15C4707G53.SYS_C00192951) violated - child 
+record found 
+
+
+
+1 row deleted.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+SQL> spool off

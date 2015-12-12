@@ -1,0 +1,17 @@
+module load soft/oracle
+sqlplus  sqlplus F14CS4707G14@o11g/[PASSWORD]
+
+!stty erase [BACKSPACE] // Enable backspace. Actually need to hit backspace key.
+
+select table_name from user_tables;
+select * from user_tables;
+
+describe student
+
+help index
+
+SET ECHO ON
+
+START /home/cjones/my_scripts/my_sql_script.sql
+
+SPOOL my_log_file.log
