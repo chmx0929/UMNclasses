@@ -1,0 +1,4 @@
+Qike Zhang 5131953
+Hao Wang 5086487
+If the URI doesn't include file extension, I assume the content-type is "text/html".
+There is a redirect problem when we visit www.sco.com.

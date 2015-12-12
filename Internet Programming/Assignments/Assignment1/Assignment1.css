@@ -1,0 +1,49 @@
+/* Name:Hao Wang   ID:5086487 */
+.title 
+{
+	color:#FFA500;
+}
+hr
+{
+	width:50%;
+}
+table 
+{
+  background-color:#F4A460;
+  border:3px solid;
+  text-align:center; 
+}
+th
+{
+  border:2px solid black;
+}
+td
+{
+  border: solid black;
+}
+.time
+{
+	color: white;
+	font-style: italic;
+}
+.day
+{
+	font-size: 25px;
+	color: blue;
+}
+.widthsize
+{
+	width: 200px;
+}
+.submitsize
+{
+	width: 205px;
+}
+.mid
+{
+	margin:0 auto; text-align:center;
+}
+.left
+{
+	width:220px; margin:auto; text-align:left;
+}
