@@ -1,0 +1,13 @@
+# Filename: config.txt
+# Description: This is the config file for proxy server
+# Author: Qike Zhang
+# Date: November 21, 2015
+# block complete access to the site
+www.badsite.com *
+# block complete access to the site (missing * defaults to ‘block complete access’ as above)
+www.badsite.com
+# block all gif files from www.microsoft.com
+www.microsoft.com image/gif
+# block all images i.e. gif, jpeg, png, etc.
+www.sco.com image/*
+

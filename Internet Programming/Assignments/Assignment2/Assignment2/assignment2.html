@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<!-- Name:Hao Wang    ID:5086487 -->
+<html>
+	<head>
+		<meta charset = "utf-8">
+		<title>Campus</title>
+		<link rel="stylesheet" type="text/css" href="assignment2.css" />
+		<script type="text/javascript">
+		var current = "";
+		var fade;
+		var alertstuts=false;
+		var status=false;
+		var firsttime=true;
+		var timerEvent;
+		var speed=5000;
+		var b;
+		var slide = false;
+		//init 10 buildings
+		var building = new Array(10);
+		//1
+		var Armory = new Object();
+		Armory.number = 0;
+		Armory.name = "Armory";
+		Armory.src = "armory.jpg";
+		Armory.year = 1896;
+		Armory.architect = "Charles Aldrich";
+		Armory.description = "Built for athletics and military drill, as well as performing arts and social activities. Memorial plaques at the front entrance honor students, faculty, and alumni who fought in the Spanish-American War.";
+		building[0] = Armory;
+		//2
+		var PillsburyHall = new Object();
+		PillsburyHall.number = 1;
+		PillsburyHall.name = "Pillsbury Hall";
+		PillsburyHall.src = "pillsbury.jpg";
+		PillsburyHall.year = 1889;
+		PillsburyHall.architect = "Leroy Buffington with Harvey Ellis";
+		PillsburyHall.description = "Built as Science Hall. Named for Governor John S. Pillsbury.";
+		building[1] = PillsburyHall;
+		//3
+		var FolwellHall = new Object();
+		FolwellHall.number = 2;
+		FolwellHall.name = "Folwell Hall";
+		FolwellHall.src = "folwell.jpg";
+		FolwellHall.year = 1907;
+		FolwellHall.architect = "Clarence H. Johnston, Sr.";
+		FolwellHall.description = "When Old Main burned in 1904, Folwell Hall was built to house displaced departments. Named for William Watts Folwell, first president of the University, 1869-84.";
+		building[2] = FolwellHall;
+		//4
+		var JonesHall = new Object();
+		JonesHall.number = 3;
+		JonesHall.name = "Jones Hall";
+		JonesHall.src = "jones.jpg";
+		JonesHall.year = 1901;
+		JonesHall.architect = "Charles Aldrich";
+		JonesHall.description = "Built as Physics Building. Named for Frederick S. Jones, professor of physics and dean of the College of Engineering.";
+		building[3] = JonesHall;
+		//5
+		var PillsburyStatue = new Object();
+		PillsburyStatue.number = 4;
+		PillsburyStatue.name = "Pillsbury Statue";
+		PillsburyStatue.src = "statue.jpg";
+		PillsburyStatue.year = 1900;
+		PillsburyStatue.architect = "Daniel C. French, sculptor";
+		PillsburyStatue.description = "Pillsbury statue located across the street from Burton Hall.";
+		building[4] = PillsburyStatue;
+		//6
+		var WesbrookHall = new Object();
+		WesbrookHall.number = 5;
+		WesbrookHall.name = "Wesbrook Hall";
+		WesbrookHall.src = "wesbrook.jpg";
+		WesbrookHall.year = 1898;
+		WesbrookHall.architect = "Frederick Corser";
+		WesbrookHall.description = "Built as Laboratory of Medical Science. In 1912, dentistry moved here. Named for Frank Wesbrook, professor of pathology and bacteriology and dean of the College of Medicine and Surgery. ";
+		building[5] = WesbrookHall;
+		//7
+		var NicholsonHall = new Object();
+		NicholsonHall.number = 6;
+		NicholsonHall.name = "Nicholson Hall";
+		NicholsonHall.src = "nicholson.jpg";
+		NicholsonHall.year = 1890;
+		NicholsonHall.architect = "LeRoy Buffington with Harvey Ellis";
+		NicholsonHall.description = "Built as chemical laboratory. In 1914, chemistry moved to the mall area and Nicholson was remodeled for the men's union until Coffman Memorial Union was built as a coed student union. Named for Edward E. Nicholson, professor of chemistry and later dean of Student Affairs.";
+		building[6] = NicholsonHall;
+		//8
+		var EddyHall = new Object();
+		EddyHall.number = 7;
+		EddyHall.name = "Eddy Hall";
+		EddyHall.src = "eddy.jpg";
+		EddyHall.year = 1886;
+		EddyHall.architect = "LeRoy Buffington";
+		EddyHall.description = "Built as Mechanic Arts. It is the oldest existing building on campus. Named for Henry Turner Eddy, professor of engineering and mathematics and dean of the Graduate School.";
+		building[7] = EddyHall;
+		//9
+		var MusicEducation = new Object();
+		MusicEducation.number = 8;
+		MusicEducation.name = "Music Education";
+		MusicEducation.src = "music.jpg";
+		MusicEducation.year = 1888;
+		MusicEducation.architect = "Warren H. Hayes";
+		MusicEducation.description = "Built as Student Christian Association building. Acquired by the University, it housed Child Welfare and Music Education.";
+		building[8] = MusicEducation;
+		//10
+		var WullingHall = new Object();
+		WullingHall.number = 9;
+		WullingHall.name = "Wulling Hall";
+		WullingHall.src = "wulling.jpg";
+		WullingHall.year = 1892;
+		WullingHall.architect = "CAllen Stem and Charles Reed";
+		WullingHall.description = "Built as Medical Hall; named Millard Hall in 1906. Fire damaged the building. It later became the site for the pharmacy building. Named for Frederick J. Wulling, first dean and founder of the College of Pharmacy.";
+		building[9] = WullingHall;
+		//obj{number,name,src,year,architect,description}
+		//type = None or Year or Architect 
+		function setpicture (n) {
+			var names = "Image Information:"+"<br/>";
+			if (document.getElementById("type").value == 1) {
+				names = names+"<br/>"+"Building: "+building[n-1].name;
+				document.getElementById("detail").innerHTML = names;
+			}
+			if (document.getElementById("type").value == 2) {
+				names = names+"<br/>"+"Building: "+building[n-1].name+"<br/>"+"<br/>"+"Year: "+building[n-1].year;
+				document.getElementById("detail").innerHTML = names;
+			}
+			if (document.getElementById("type").value == 3) {
+				names = names+"<br/>"+"Building: "+building[n-1].name+"<br/>"+"<br/>"+"Architect: "+building[n-1].architect;
+				document.getElementById("detail").innerHTML = names;
+			}
+			if (document.getElementById("type").value == 4) {
+				names = names+"<br/>"+"Building: "+building[n-1].name+"<br/>"+"<br/>"+"Description: "+building[n-1].description;
+				document.getElementById("detail").innerHTML = names;
+			}
+			//document.getElementById("pic").innerHTML = "<img src='"+building[n-1].src+"' ></img>";
+			document.getElementById("pic").innerHTML = "<img src='"+building[n-1].src+"' class = picarea ></img>";
+		}
+		function setBolder(id){
+			if (current != ""){
+				document.getElementById(current).style.borderStyle="None";
+				document.getElementById(current).style.borderColor="None";
+			}
+			document.getElementById(id).style.borderStyle="solid";
+			document.getElementById(id).style.borderColor="red";
+			setpicture(id);
+			current = id;
+		}
+		function Start(){
+			setBolder(1);
+		}
+		function Next(){
+			if(current==10){
+				setBolder(1);
+			}
+			else{
+				setBolder(current+1);
+			}
+		}
+		function Previous(){
+			if(current==1){
+				setBolder(10);
+			}
+			else{
+				setBolder(current-1);
+			}	
+		}
+		function setSpeed(){
+			speed = 10000 - document.getElementById("Range").value*90;
+		}
+		function StartSlide(){ 	
+				document.getElementById("Start").disabled=true;
+				document.getElementById("Next").disabled=true;
+				document.getElementById("Previous").disabled=true;
+				alertstuts=true;
+				if (current == ""){
+					current = 1;
+					document.getElementById(current).style.borderStyle="solid";
+					document.getElementById(current).style.borderColor="red";
+				}else{
+					document.getElementById(current).style.borderStyle="None";
+					document.getElementById(current).style.borderColor="None";
+					current = current%10+1;
+					document.getElementById(current).style.borderStyle="solid";
+					document.getElementById(current).style.borderColor="red";
+				}
+
+				var names = "Image Information:"+"<br/>";
+				if (document.getElementById("type").value == 1) {
+					names = names+"<br/>"+"Building: "+building[current-1].name;
+					document.getElementById("detail").innerHTML = names;
+				}
+				if (document.getElementById("type").value == 2) {
+					names = names+"<br/>"+"Building: "+building[current-1].name+"<br/>"+"<br/>"+"Year: "+building[current-1].year;
+					document.getElementById("detail").innerHTML = names;
+				}
+				if (document.getElementById("type").value == 3) {
+					names = names+"<br/>"+"Building: "+building[current-1].name+"<br/>"+"<br/>"+"Architect: "+building[current-1].architect;
+					document.getElementById("detail").innerHTML = names;
+				}
+				if (document.getElementById("type").value == 4) {
+					names = names+"<br/>"+"Building: "+building[current-1].name+"<br/>"+"<br/>"+"Description: "+building[current-1].description;
+					document.getElementById("detail").innerHTML = names;
+				}
+				document.getElementById("pic").innerHTML = "<img src='"+building[current-1].src+"' class = picarea></img>";
+				fadefun();
+				 timerEvent = setTimeout("StartSlide()",speed);
+		}
+		function StopSlide(){
+			document.getElementById("Start").disabled=false;
+			document.getElementById("Next").disabled=false;
+			document.getElementById("Previous").disabled=false;
+			slide = false;
+			alertstuts = false;
+			clearTimeout(timerEvent);
+			clearTimeout(fade);
+			clearInterval(b);
+			document.getElementById("pic").style.opacity =1;
+		}
+		function reload(){
+			setBolder(current);
+		}
+		function fadefun(){
+			fadein("pic",speed);
+			fade = setTimeout(function(){fadeout("pic",speed)},speed*0.7);
+		}
+		function fadein(index,sp){
+			document.getElementById(index).style.opacity = 0;
+			var e = document.getElementById(index);
+			var a = setInterval(function(){if (e.style.opacity>=1.0) {clearInterval(a);}
+												e.style.opacity = Number (e.style.opacity ) + 0.1;},sp/50)
+		}
+		function fadeout(index,sp){
+			var e = document.getElementById(index);
+			e.style.opacity = 1;
+			b = setInterval(function(){if (e.style.opacity<=0) {clearInterval(b);}
+												e.style.opacity = Number (e.style.opacity ) - 0.1;}, sp/50)
+		}
+		function Alert(){
+			if (alertstuts) {
+				alert("Slides are showing");
+			}
+		}
+		</script>
+	</head>
+
+	<body>
+		<div>
+			<input type="button" id="Start" value="Start" onClick ="Start()" />
+			<input type="button" id="Next" value="Next" onClick ="Next()" />
+			<input type="button" id="Previous" value="Previous" onClick ="Previous()" />
+			Select Information Type: <select name="type" id="type" onchange="reload()"><option value="1">None</option><option value="2">Year</option><option value="3">Architect</option><option value="4">Description</option></select><br/>
+		</div>
+		<div>
+			<img class="thumbnail" id="1" alt="Armory" src="armory.jpg" onClick = "setBolder(1)"/>
+			<img class="thumbnail" id="2" alt="PillsburyHall" src="pillsbury.jpg" onClick = "setBolder(2)"/>
+			<img class="thumbnail" id="3" alt="FolwellHall" src="folwell.jpg" onClick = "setBolder(3)"/>
+			<img class="thumbnail" id="4" alt="JonesHall" src="jones.jpg" onClick = "setBolder(4)"/>
+			<img class="thumbnail" id="5" alt="PillsburyStatue" src="statue.jpg" onClick = "setBolder(5)"/>
+			<img class="thumbnail" id="6" alt="WesbrookHall" src="wesbrook.jpg" onClick = "setBolder(6)"/>
+			<img class="thumbnail" id="7" alt="NicholsonHall" src="nicholson.jpg" onClick = "setBolder(7)"/>		
+			<img class="thumbnail" id="8" alt="EddyHall" src="eddy.jpg" onClick = "setBolder(8)"/>
+			<img class="thumbnail" id="9" alt="MusicEducation" src="music.jpg" onClick = "setBolder(9)"/>
+			<img class="thumbnail" id="10" alt="WullingHall" src="wulling.jpg" onClick = "setBolder(10)"/>
+		</div>
+		<hr/>
+		<div>
+			<input type="button" value="Start Slide Show" onClick ="Alert();StartSlide()" />
+			<input type="button" value="Stop Slide Show" onClick ="StopSlide()" />
+		</div>
+		<div>
+			Slow<input type="range" id="Range" onchange="setSpeed()">Fast
+		</div>
+		<div class="picture" id="pic">
+		</div>
+		<div class="detail" id="detail">
+		Image Information:
+		</div>
+	</body>
+</html>
